@@ -195,6 +195,10 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     }
 
     public void show() {
+        if (mMorphing) {
+            return;
+        }
+
         mMorphed = true;
         mMorphing = true;
 
