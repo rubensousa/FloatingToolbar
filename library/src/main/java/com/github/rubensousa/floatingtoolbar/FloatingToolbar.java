@@ -248,7 +248,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
          * Move FloatingToolbar to the original position
          */
         animate().x(mOriginalX).setStartDelay(CIRCULAR_REVEAL_DELAY)
-                .setDuration(CIRCULAR_REVEAL_DURATION)
+                .setDuration(150)
                 .setInterpolator(new AccelerateDecelerateInterpolator());
     }
 
