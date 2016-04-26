@@ -46,10 +46,10 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     private static final int FAB_MORPH_DURATION = 200;
     private static final int FAB_UNMORPH_DURATION = 200;
-    private static final int FAB_UNMORPH_DELAY = 250;
+    private static final int FAB_UNMORPH_DELAY = 300;
     private static final int CIRCULAR_REVEAL_DURATION = 300;
     private static final int CIRCULAR_UNREVEAL_DURATION = 200;
-    private static final int CIRCULAR_REVEAL_DELAY = 100;
+    private static final int CIRCULAR_REVEAL_DELAY = 125;
     private static final int CIRCULAR_UNREVEAL_DELAY = 150;
     private static final int MENU_ANIMATION_DELAY = 200;
     private static final int MENU_ANIMATION_DURATION = 300;
@@ -118,10 +118,10 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             addMenuItems();
         }
 
-        // Set elevation to 8dp
+        // Set elevation to 6dp
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setElevation(context.getResources().getDisplayMetrics().densityDpi
-                    / DisplayMetrics.DENSITY_DEFAULT * 8f);
+                    / DisplayMetrics.DENSITY_DEFAULT * 6f);
         }
 
         setOrientation(HORIZONTAL);
@@ -248,7 +248,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
          * Move FloatingToolbar to the original position
          */
         animate().x(mOriginalX).setStartDelay(CIRCULAR_REVEAL_DELAY)
-                .setDuration(150)
+                .setDuration(CIRCULAR_REVEAL_DURATION / 2)
                 .setInterpolator(new AccelerateDecelerateInterpolator());
     }
 
@@ -277,7 +277,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             if (mMenuLayout != null) {
                 mMenuLayout.animate().alpha(0f).scaleX(0.7f)
                         .setStartDelay(CIRCULAR_UNREVEAL_DELAY)
-                        .setDuration(CIRCULAR_UNREVEAL_DURATION);
+                        .setDuration(MENU_ANIMATION_DURATION / 2);
             }
             if (mCustomView != null) {
                 mCustomView.animate().alpha(0f).scaleX(0.7f)
@@ -432,11 +432,14 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         int rootWidth = mRoot.getWidth();
 
         float endFabX;
+        float controlX;
 
         if (mFabOriginalX > rootWidth / 2f) {
             endFabX = rootWidth / 2f + (mFabOriginalX - rootWidth / 2f) / 4f;
+            controlX = mFabOriginalX * 0.98f;
         } else {
             endFabX = rootWidth / 2f - (mFabOriginalX - rootWidth / 2f) / 4f;
+            controlX = mFabOriginalX * 1.02f;
         }
 
         /**
@@ -444,8 +447,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
          */
         final Path path = new Path();
         path.moveTo(mFabOriginalX, mFabOriginalY);
-        final float x2 = endFabX * 1.2f;
-        final float y2 = mFabOriginalY * 1.03f;
+        final float x2 = controlX;
+        final float y2 = getY();
         path.quadTo(x2, y2, endFabX, getY());
         ObjectAnimator anim = ObjectAnimator.ofFloat(mFab, View.X, View.Y, path);
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -484,18 +487,19 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private void hideLollipopImpl() {
         int rootWidth = mRoot.getWidth();
 
-        float endFabX;
+        float controlX;
+
         if (mFabOriginalX > rootWidth / 2f) {
-            endFabX = rootWidth / 2f + (mFabOriginalX - rootWidth / 2f) / 4f;
+            controlX = mFabOriginalX * 0.98f;
         } else {
-            endFabX = rootWidth / 2f - (mFabOriginalX - rootWidth / 2f) / 4f;
+            controlX = mFabOriginalX * 1.02f;
         }
 
 
         final Path path = new Path();
         path.moveTo(mFab.getX(), mFab.getY());
-        final float x2 = endFabX * 1.2f;
-        final float y2 = mFabOriginalY * 1.03f;
+        final float x2 = controlX;
+        final float y2 = getY();
         path.quadTo(x2, y2, mFabOriginalX, mFabOriginalY);
         ObjectAnimator anim = ObjectAnimator.ofFloat(mFab, View.X, View.Y, path);
         anim.addListener(new AnimatorListenerAdapter() {
