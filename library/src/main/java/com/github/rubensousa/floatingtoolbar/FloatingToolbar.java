@@ -87,10 +87,20 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FloatingToolbar, 0, 0);
 
         TypedValue outValue = new TypedValue();
+
+        // Set colorAccent as default color
+        if (getBackground() == null) {
+            getContext().getTheme().resolveAttribute(R.attr.colorAccent, outValue, true);
+            setBackgroundResource(outValue.resourceId);
+        }
+
         getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground,
                 outValue, true);
+
         mItemBackground = a.getResourceId(R.styleable.FloatingToolbar_itemBackground, outValue.resourceId);
+
         mMenuRes = a.getResourceId(R.styleable.FloatingToolbar_menu, 0);
+
         int customView = a.getResourceId(R.styleable.FloatingToolbar_customView, 0);
 
         if (customView != 0) {
@@ -102,8 +112,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         if (customView == 0) {
             mMenuLayout = new LinearLayoutCompat(context, attrs, defStyleAttr);
 
-            LinearLayoutCompat.LayoutParams layoutParams
-                    = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            LayoutParams layoutParams
+                    = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
 
             mMenuLayout.setId(genViewId());
