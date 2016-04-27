@@ -113,11 +113,11 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground,
                 outValue, true);
 
-        mItemBackground = a.getResourceId(R.styleable.FloatingToolbar_itemBackground, outValue.resourceId);
+        mItemBackground = a.getResourceId(R.styleable.FloatingToolbar_floatingItemBackground, outValue.resourceId);
 
-        mMenuRes = a.getResourceId(R.styleable.FloatingToolbar_menu, 0);
+        mMenuRes = a.getResourceId(R.styleable.FloatingToolbar_floatingMenu, 0);
 
-        int customView = a.getResourceId(R.styleable.FloatingToolbar_customView, 0);
+        int customView = a.getResourceId(R.styleable.FloatingToolbar_floatingCustomView, 0);
 
         if (customView != 0) {
             mCustomView = LayoutInflater.from(context).inflate(customView, this, true);
