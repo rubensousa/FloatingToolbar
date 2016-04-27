@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
 
 
         mFloatingToolbar.setClickListener(this);
-        mFloatingToolbar.attachFab(fab, true);
+        mFloatingToolbar.attachFab(fab);
         mFloatingToolbar.attachRecyclerView(recyclerView);
 
         View customView = mFloatingToolbar.getCustomView();

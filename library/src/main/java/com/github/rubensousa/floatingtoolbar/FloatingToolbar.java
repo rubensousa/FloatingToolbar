@@ -180,18 +180,16 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         addMenuItems();
     }
 
-    public void attachFab(FloatingActionButton fab, boolean morphOnClick) {
+    public void attachFab(FloatingActionButton fab) {
         mFab = fab;
-        if (morphOnClick) {
-            mFab.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!mMorphed) {
-                        show();
-                    }
+        mFab.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mMorphed) {
+                    show();
                 }
-            });
-        }
+            }
+        });
     }
 
     public void attachRecyclerView(RecyclerView recyclerView) {
@@ -368,11 +366,11 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         if (mFab != null) {
             PropertyValuesHolder xProperty = PropertyValuesHolder.ofFloat(X, endFabX);
             PropertyValuesHolder yProperty = PropertyValuesHolder.ofFloat(Y, mFabOriginalY * 1.05f);
-            PropertyValuesHolder scaleXProperty = PropertyValuesHolder.ofFloat(SCALE_X,0);
-            PropertyValuesHolder scaleYProperty = PropertyValuesHolder.ofFloat(SCALE_Y,0);
+            PropertyValuesHolder scaleXProperty = PropertyValuesHolder.ofFloat(SCALE_X, 0);
+            PropertyValuesHolder scaleYProperty = PropertyValuesHolder.ofFloat(SCALE_Y, 0);
 
             ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(mFab, xProperty,
-                    yProperty,scaleXProperty,scaleYProperty);
+                    yProperty, scaleXProperty, scaleYProperty);
             animator.setDuration(FAB_MORPH_DURATION);
             animator.setInterpolator(new AccelerateInterpolator());
             animator.start();
