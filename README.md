@@ -9,7 +9,7 @@ Available from API 14.
 
 ## How to use
 
-- Add the following to your build.gradle:
+1. Add the following to your build.gradle:
 
         repositories{
           maven { url "https://jitpack.io" }
@@ -19,7 +19,7 @@ Available from API 14.
           compile 'com.github.rubensousa:FloatingToolbar:0.2'
         }
 
-- Add FloatingToolbar as a direct child of CoordinatorLayout and before the FloatingActionButton:
+2. Add FloatingToolbar as a direct child of CoordinatorLayout and before the FloatingActionButton:
 
 
         <android.support.design.widget.CoordinatorLayout 
@@ -50,15 +50,24 @@ Available from API 14.
                 
         </android.support.design.widget.CoordinatorLayout>
 
-- Specify a menu resource file or custom layout with app:floatingMenu or app:floatingCustomView
+3. Specify a menu resource file or custom layout with app:floatingMenu or app:floatingCustomView
 
-- Attach the FAB to the FloatingToolbar
+4. Attach the FAB to the FloatingToolbar to automatically start the transition:
 
         mFloatingToolbar.attachFab(fab);
 
-- Attach a RecyclerView to hide the toolbar on scroll:
+5. Attach a RecyclerView to hide the FloatingToolbar on scroll:
 
         mFloatingToolbar.attachRecyclerView(recyclerView);
+
+
+6. (Optional) Use show() and hide() to trigger the transition anytime:
+
+        mFloatingToolbar.show();
+        mFLoatingToolbar.hide();
+        
+
+
 
 ## Attributes
 
