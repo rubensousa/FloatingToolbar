@@ -16,7 +16,7 @@ Available from API 14.
         }
         
         dependencies {
-          compile 'com.github.rubensousa:FloatingToolbar:0.1'
+          compile 'com.github.rubensousa:FloatingToolbar:0.2'
         }
 
 - Add FloatingToolbar as a direct child of CoordinatorLayout and before the FloatingActionButton:
