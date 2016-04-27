@@ -37,7 +37,7 @@ Available from API 14.
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_gravity="bottom"
-                app:menu="@menu/main" />
+                app:floatingMenu="@menu/main" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab"
@@ -50,7 +50,7 @@ Available from API 14.
                 
         </android.support.design.widget.CoordinatorLayout>
 
-- Specify a menu resource file or custom layout with app:menu or app:customView
+- Specify a menu resource file or custom layout with app:floatingMenu or app:floatingCustomView
 
 - Attach the FAB to the FloatingToolbar
 
@@ -62,9 +62,9 @@ Available from API 14.
 
 ## Attributes
 
-- app:menu -> Menu resource
-- app:itemBackground -> Drawable resource
-- app:customView -> Layout resource
+- app:floatingMenu -> Menu resource
+- app:floatingItemBackground -> Drawable resource
+- app:floatingCustomView -> Layout resource
 
 
 ## License
