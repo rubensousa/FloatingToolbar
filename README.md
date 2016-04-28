@@ -52,7 +52,7 @@ Available from API 14.
 
 3. Specify a menu resource file or custom layout with app:floatingMenu or app:floatingCustomView
 
-4. Attach the FAB to the FloatingToolbar to automatically start the transition:
+4. Attach the FAB to the FloatingToolbar to automatically start the transition on click event:
 
         mFloatingToolbar.attachFab(fab);
 
