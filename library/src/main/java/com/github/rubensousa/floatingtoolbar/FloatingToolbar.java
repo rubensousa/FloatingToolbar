@@ -53,7 +53,6 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.LinearInterpolator;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -65,12 +64,12 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private static final int FAB_MORPH_DURATION = 200;
     private static final int FAB_UNMORPH_DURATION = 200;
     private static final int FAB_UNMORPH_DELAY = 300;
-    private static final int CIRCULAR_REVEAL_DURATION = 300;
+    private static final int CIRCULAR_REVEAL_DURATION = 200;
     private static final int CIRCULAR_UNREVEAL_DURATION = 200;
     private static final int CIRCULAR_REVEAL_DELAY = 125;
     private static final int CIRCULAR_UNREVEAL_DELAY = 150;
     private static final int MENU_ANIMATION_DELAY = 200;
-    private static final int MENU_ANIMATION_DURATION = 300;
+    private static final int MENU_ANIMATION_DURATION = 200;
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
     private FloatingActionButton mFab;
@@ -478,7 +477,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
          * Animate FAB movement
          */
         final Path path = new Path();
-        path.moveTo(mFabOriginalX, mFabOriginalY);
+        path.moveTo(mFab.getX(), mFab.getY());
         final float x2 = controlX;
         final float y2 = getY();
         path.quadTo(x2, y2, endFabX, getY());
@@ -495,7 +494,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             anim = ObjectAnimator.ofPropertyValuesHolder(drawable,
                     PropertyValuesHolder.ofInt("alpha", 0));
             anim.setInterpolator(new AccelerateDecelerateInterpolator());
-            anim.setDuration((long) (FAB_MORPH_DURATION / 2f));
+            anim.setDuration((long) (FAB_MORPH_DURATION / 3f));
             anim.start();
         }
 
@@ -531,7 +530,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             }
         });
 
-        toolbarReveal.setInterpolator(new LinearInterpolator());
+        toolbarReveal.setInterpolator(new AccelerateInterpolator());
         toolbarReveal.setStartDelay(CIRCULAR_REVEAL_DELAY);
         toolbarReveal.start();
 
@@ -561,7 +560,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         path.moveTo(mFab.getX(), mFab.getY());
         final float x2 = controlX;
         final float y2 = getY();
-        path.quadTo(x2, y2, mFabOriginalX, mFabOriginalY);
+        path.quadTo(x2, y2, mFabOriginalX, mFabOriginalY + getTranslationY());
         ObjectAnimator anim = ObjectAnimator.ofFloat(mFab, View.X, View.Y, path);
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
         anim.setDuration(FAB_UNMORPH_DURATION);
@@ -585,7 +584,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             anim = ObjectAnimator.ofPropertyValuesHolder(drawable,
                     PropertyValuesHolder.ofInt("alpha", 255));
             anim.setInterpolator(new AccelerateDecelerateInterpolator());
-            anim.setDuration((long) (FAB_UNMORPH_DURATION / 2f));
+            anim.setDuration(FAB_UNMORPH_DURATION);
             anim.setStartDelay(FAB_UNMORPH_DELAY);
             anim.start();
         }
@@ -606,7 +605,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             }
         });
         toolbarReveal.setDuration(CIRCULAR_UNREVEAL_DURATION);
-        toolbarReveal.setInterpolator(new LinearInterpolator());
+        toolbarReveal.setInterpolator(new AccelerateInterpolator());
         toolbarReveal.setStartDelay(CIRCULAR_UNREVEAL_DELAY);
         toolbarReveal.start();
 
@@ -646,17 +645,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             return false;
         }
 
-        @Override
-        public void onDependentViewRemoved(CoordinatorLayout parent, FloatingToolbar child, View dependency) {
-            super.onDependentViewRemoved(parent, child, dependency);
-            child.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator());
-        }
-
         private void updateTranslationForSnackbar(CoordinatorLayout parent, final FloatingToolbar layout) {
-
-            if (layout.getVisibility() != View.VISIBLE) {
-                return;
-            }
 
             final float targetTransY = getTranslationYForSnackbar(parent, layout);
             if (mTranslationY == targetTransY) {
@@ -669,7 +658,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                 mTranslationYAnimator.cancel();
             }
 
-            if (layout.isShowing() && Math.abs(currentTransY - targetTransY) > (layout.getHeight() * 0.667f)) {
+            if (Math.abs(currentTransY - targetTransY) > (layout.getHeight() * 0.667f)) {
                 if (mTranslationYAnimator == null) {
                     mTranslationYAnimator = new ValueAnimator();
                     mTranslationYAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
