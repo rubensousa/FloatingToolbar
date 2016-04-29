@@ -64,12 +64,12 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private static final int FAB_MORPH_DURATION = 200;
     private static final int FAB_UNMORPH_DURATION = 200;
     private static final int FAB_UNMORPH_DELAY = 300;
-    private static final int CIRCULAR_REVEAL_DURATION = 200;
+    private static final int CIRCULAR_REVEAL_DURATION = 300;
     private static final int CIRCULAR_UNREVEAL_DURATION = 200;
     private static final int CIRCULAR_REVEAL_DELAY = 125;
     private static final int CIRCULAR_UNREVEAL_DELAY = 150;
     private static final int MENU_ANIMATION_DELAY = 200;
-    private static final int MENU_ANIMATION_DURATION = 200;
+    private static final int MENU_ANIMATION_DURATION = 300;
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
     private FloatingActionButton mFab;
