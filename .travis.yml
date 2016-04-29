@@ -10,3 +10,9 @@ android:
 
 jdk:
   - oraclejdk8
+
+script: "./gradlew build"
+
+branches:
+  except:
+    - gh-pages
