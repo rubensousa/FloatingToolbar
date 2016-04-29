@@ -17,7 +17,7 @@ repositories{
 }
 
 dependencies {
-  compile 'com.github.rubensousa:FloatingToolbar:0.2'
+  compile 'com.github.rubensousa:FloatingToolbar:0.3'
 }
 ```
 2. Add FloatingToolbar as a direct child of CoordinatorLayout and before the FloatingActionButton:
@@ -74,6 +74,15 @@ mFloatingToolbar.hide();
 - app:floatingItemBackground -> Drawable resource
 - app:floatingCustomView -> Layout resource
 
+## Changelog
+
+### 0.3 (29/04/2016)
+- Improved behavior with SnackBar (Still needs some fixes though)
+- Improved morph animation
+- Throw IllegalStateException if FAB is not attached and show() or hide() are called
+
+### 0.2 (26/04/2016)
+- Renamed attributes
 
 ## License
 
