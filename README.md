@@ -5,7 +5,8 @@ Inspired by the material design spec: https://www.google.com/design/spec/compone
 
 Available from API 14.
 
-<img src="screenshots/demo.gif" width="350">
+
+<img src="screenshots/demo.gif" width="350"><img src="screenshots/demo_scroll.gif" width="350">
 
 ## How to use
 
