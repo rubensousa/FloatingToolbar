@@ -64,7 +64,7 @@ Available from API 14.
 6. (Optional) Use show() and hide() to trigger the transition anytime:
 
         mFloatingToolbar.show();
-        mFLoatingToolbar.hide();
+        mFloatingToolbar.hide();
         
 
 
