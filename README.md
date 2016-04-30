@@ -57,13 +57,28 @@ dependencies {
 ```java
 mFloatingToolbar.attachFab(fab);
 ```
-#####5. Attach a RecyclerView to hide the FloatingToolbar on scroll:
+
+##### 5. Set a click listener
+```java
+mFloatingToolbar.setClickListener(new FloatingToolbar.ItemClickListener() {
+            @Override
+            public void onItemClick(MenuItem item) {
+                
+            }
+
+            @Override
+            public void onItemLongClick(MenuItem item) {
+
+            }
+        });
+```
+##### 6. (Optional) Attach a RecyclerView to hide the FloatingToolbar on scroll:
 
 ```java
 mFloatingToolbar.attachRecyclerView(recyclerView);
 ```
 
-#####6. (Optional) Use show() and hide() to trigger the transition anytime:
+##### 7 . (Optional) Use show() and hide() to trigger the transition anytime:
 
 ```java
 mFloatingToolbar.show();
