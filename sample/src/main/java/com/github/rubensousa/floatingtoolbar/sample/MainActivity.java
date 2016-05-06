@@ -1,5 +1,6 @@
 package com.github.rubensousa.floatingtoolbar.sample;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -18,7 +19,8 @@ import android.view.MenuItem;
 import com.github.rubensousa.floatingtoolbar.FloatingToolbar;
 import com.github.rubensousa.floatingtoolbar.sample.R;
 
-public class MainActivity extends AppCompatActivity implements FloatingToolbar.ItemClickListener, Toolbar.OnMenuItemClickListener {
+public class MainActivity extends AppCompatActivity implements FloatingToolbar.ItemClickListener,
+        Toolbar.OnMenuItemClickListener, CustomAdapter.ClickListener {
 
     private Toolbar mToolbar;
     private FloatingToolbar mFloatingToolbar;
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
         mToolbar.inflateMenu(R.menu.menu_toolbar);
         mToolbar.setOnMenuItemClickListener(this);
 
-        mAdapter = new CustomAdapter();
+        mAdapter = new CustomAdapter(this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(mAdapter);
@@ -66,6 +68,12 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
     @Override
     public void onItemLongClick(MenuItem item) {
 
+    }
+
+    @Override
+    public void onAdapterItemClick(MenuItem item) {
+        Intent intent = new Intent(this, DetailActivity.class);
+        startActivityForResult(intent, 0);
     }
 
     @Override

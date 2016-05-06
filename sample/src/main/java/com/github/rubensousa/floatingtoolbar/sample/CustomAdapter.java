@@ -13,10 +13,16 @@ import java.util.List;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
 
+    private ClickListener mListener;
     private List<MenuItem> mItems;
 
-    public CustomAdapter() {
+    public CustomAdapter(ClickListener listener) {
         mItems = new ArrayList<>();
+        mListener = listener;
+    }
+
+    public void setClickListener(ClickListener listener) {
+        mListener = listener;
     }
 
     public void addItem(MenuItem item) {
@@ -40,13 +46,14 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         return mItems.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public MenuItem item;
         public TextView textView;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             textView = (TextView) itemView.findViewById(R.id.textView);
         }
 
@@ -54,5 +61,16 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             this.item = item;
             textView.setText(item.getTitle());
         }
+
+        @Override
+        public void onClick(View v) {
+            if (mListener != null) {
+                mListener.onAdapterItemClick(item);
+            }
+        }
+    }
+
+    public interface ClickListener {
+        void onAdapterItemClick(MenuItem item);
     }
 }
