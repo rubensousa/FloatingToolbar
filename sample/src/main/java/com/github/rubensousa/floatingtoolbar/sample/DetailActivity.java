@@ -19,6 +19,7 @@ package com.github.rubensousa.floatingtoolbar.sample;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 
@@ -31,9 +32,11 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detail_activity);
 
+        AppBarLayout appbar = (AppBarLayout) findViewById(R.id.appbar);
         FloatingToolbar floatingToolbar = (FloatingToolbar) findViewById(R.id.floatingToolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         floatingToolbar.attachFab(fab);
+        floatingToolbar.attachAppBarLayout(appbar);
     }
 
 }

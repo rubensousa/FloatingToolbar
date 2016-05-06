@@ -32,6 +32,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.MenuRes;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -59,19 +60,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @CoordinatorLayout.DefaultBehavior(FloatingToolbar.Behavior.class)
 public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickListener,
-        View.OnLongClickListener {
+        View.OnLongClickListener, AppBarLayout.OnOffsetChangedListener {
 
     private static final int FAB_MORPH_DURATION = 200;
     private static final int FAB_UNMORPH_DURATION = 200;
     private static final int FAB_UNMORPH_DELAY = 300;
     private static final int CIRCULAR_REVEAL_DURATION = 300;
     private static final int CIRCULAR_UNREVEAL_DURATION = 200;
-    private static final int CIRCULAR_REVEAL_DELAY = 125;
+    private static final int CIRCULAR_REVEAL_DELAY = 140;
     private static final int CIRCULAR_UNREVEAL_DELAY = 150;
     private static final int MENU_ANIMATION_DELAY = 200;
     private static final int MENU_ANIMATION_DURATION = 300;
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
+    private AppBarLayout mAppBar;
     private FloatingActionButton mFab;
     private Menu mMenu;
     private View mCustomView;
@@ -87,6 +89,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private View mRoot;
     private float mFabOriginalX;
     private float mFabOriginalY;
+    private float mFabNewY;
     private float mOriginalX;
     private ItemClickListener mClickListener;
     private LinearLayoutCompat mMenuLayout;
@@ -160,9 +163,18 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
         if (mFab != null && mFabOriginalX == 0 && mFabOriginalY == 0) {
             mFabOriginalY = mFab.getY();
+            mFabNewY = mFabOriginalY;
             mFabOriginalX = mFab.getX();
             mOriginalX = getX();
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if (mAppBar != null) {
+            mAppBar.removeOnOffsetChangedListener(this);
+        }
+        super.onDetachedFromWindow();
     }
 
     public boolean isShowing() {
@@ -194,6 +206,11 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         mMenu = menu;
         removeAllViews();
         addMenuItems();
+    }
+
+    public void attachAppBarLayout(AppBarLayout appbar) {
+        mAppBar = appbar;
+        mAppBar.addOnOffsetChangedListener(this);
     }
 
     public void attachFab(FloatingActionButton fab) {
@@ -291,6 +308,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
         if (mMorphed && !mMorphing) {
             mMorphed = false;
+            mMorphing = true;
 
             float x = getX();
 
@@ -426,7 +444,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private void hideDefaultImpl() {
         ViewCompat.animate(mFab)
                 .x(mFabOriginalX)
-                .y(mFabOriginalY)
+                .y(mAppBar != null ? mFabNewY + getTranslationY()
+                        : mFabOriginalY + getTranslationY())
                 .scaleX(1f)
                 .scaleY(1f)
                 .setStartDelay(FAB_UNMORPH_DELAY)
@@ -467,10 +486,10 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
         if (mFabOriginalX > rootWidth / 2f) {
             endFabX = rootWidth / 2f + (mFabOriginalX - rootWidth / 2f) / 4f;
-            controlX = mFabOriginalX * 0.98f;
+            controlX = mAppBar == null ? mFabOriginalX * 0.98f : mFabOriginalX * 1.15f;
         } else {
             endFabX = rootWidth / 2f - (mFabOriginalX - rootWidth / 2f) / 4f;
-            controlX = mFabOriginalX * 1.02f;
+            controlX = mAppBar == null ? mFabOriginalX * 1.02f : mFabOriginalX * 0.85f;
         }
 
         /**
@@ -546,25 +565,39 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     @TargetApi(21)
     private void hideLollipopImpl() {
         int rootWidth = mRoot.getWidth();
-
         float controlX;
 
         if (mFabOriginalX > rootWidth / 2f) {
-            controlX = mFabOriginalX * 0.98f;
+            controlX = mAppBar == null ? mFabOriginalX * 0.98f : mFabOriginalX * 1.15f;
         } else {
-            controlX = mFabOriginalX * 1.02f;
+            controlX = mAppBar == null ? mFabOriginalX * 1.02f : mFabOriginalX * 0.85f;
         }
-
 
         final Path path = new Path();
         path.moveTo(mFab.getX(), mFab.getY());
         final float x2 = controlX;
         final float y2 = getY();
-        path.quadTo(x2, y2, mFabOriginalX, mFabOriginalY + getTranslationY());
+        path.quadTo(x2, y2, mFabOriginalX, mAppBar != null ? mFabNewY + getTranslationY()
+                : mFabOriginalY + getTranslationY());
         ObjectAnimator anim = ObjectAnimator.ofFloat(mFab, View.X, View.Y, path);
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
         anim.setDuration(FAB_UNMORPH_DURATION);
         anim.setStartDelay(FAB_UNMORPH_DELAY);
+        anim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                // Make sure the fab goes to the right place after the animation ends
+                // when the Appbar is attached
+                if (mAppBar != null && mFab.getY() != mFabNewY) {
+                    mFab.setAlpha(0f);
+                    mFab.setY(mFabNewY);
+                    mFab.animate().alpha(1f)
+                            .setDuration(200)
+                            .setInterpolator(new AccelerateDecelerateInterpolator()).start();
+                }
+            }
+        });
         anim.start();
 
         /**
@@ -616,6 +649,12 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         anim.setDuration(CIRCULAR_UNREVEAL_DURATION);
         anim.setStartDelay(CIRCULAR_UNREVEAL_DELAY);
         anim.start();
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        // Fab can be a bit higher than the AppBar when this last covers the whole screen.
+        mFabNewY = mFabOriginalY + verticalOffset;
     }
 
     public interface ItemClickListener {
