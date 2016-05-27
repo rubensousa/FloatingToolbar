@@ -340,13 +340,15 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
         for (int i = 0; i < mMenu.size(); i++) {
             MenuItem item = mMenu.getItem(i);
-            AppCompatImageButton imageButton = new AppCompatImageButton(getContext());
-            imageButton.setId(genViewId());
-            imageButton.setBackgroundResource(mItemBackground);
-            imageButton.setImageDrawable(item.getIcon());
-            imageButton.setOnClickListener(this);
-            imageButton.setOnLongClickListener(this);
-            mMenuLayout.addView(imageButton, layoutParams);
+            if (item.isVisible()) {
+                AppCompatImageButton imageButton = new AppCompatImageButton(getContext());
+                imageButton.setId(genViewId());
+                imageButton.setBackgroundResource(mItemBackground);
+                imageButton.setImageDrawable(item.getIcon());
+                imageButton.setOnClickListener(this);
+                imageButton.setOnLongClickListener(this);
+                mMenuLayout.addView(imageButton, layoutParams);
+            }
         }
 
     }
