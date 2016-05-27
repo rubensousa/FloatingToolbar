@@ -43,7 +43,6 @@
 
 
     </android.support.design.widget.AppBarLayout>
-
     <com.github.rubensousa.floatingtoolbar.FloatingToolbar
         android:id="@+id/floatingToolbar"
         android:layout_width="match_parent"
