@@ -64,13 +64,13 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     private static final int DELAY_MIN_WIDTH = 300;
     private static final int DELAY_MAX_WIDTH = 900;
-    private static final int DELAX_MAX = 150;
+    private static final int DELAY_MAX = 150;
     private static final int FAB_MORPH_DURATION = 200;
     private static final int FAB_UNMORPH_DURATION = 200;
     private static final int FAB_UNMORPH_DELAY = 300;
     private static final int CIRCULAR_REVEAL_DURATION = 300;
     private static final int CIRCULAR_UNREVEAL_DURATION = 200;
-    private static final int CIRCULAR_REVEAL_DELAY = 90;
+    private static final int CIRCULAR_REVEAL_DELAY = 50;
     private static final int CIRCULAR_UNREVEAL_DELAY = 150;
     private static final int TOOLBAR_UNREVEAL_DELAY = 200;
     private static final int MENU_ANIMATION_DELAY = 200;
@@ -288,7 +288,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
          * Move FloatingToolbar to the original position
          */
         animate().x(mOriginalX).setStartDelay(CIRCULAR_REVEAL_DELAY + mDelay)
-                .setDuration((long) (CIRCULAR_REVEAL_DURATION / 1.5) + mDelay)
+                .setDuration((long) (CIRCULAR_REVEAL_DURATION) + mDelay)
                 .setInterpolator(new AccelerateDecelerateInterpolator());
     }
 
@@ -626,17 +626,17 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
 
         if (width > maxWidth) {
-            return DELAX_MAX;
+            return DELAY_MAX;
         }
 
-        return (long) (DELAX_MAX / diff * (width - minWidth));
+        return (long) (DELAY_MAX / diff * (width - minWidth));
     }
 
     private float calcFabEndX() {
         if (mMorphed) {
             return mFabOriginalX > mRoot.getWidth() / 2f ?
-                    mFabOriginalX - mFab.getWidth() :
-                    mFabOriginalX + mFab.getWidth();
+                    mFabOriginalX - mFab.getWidth()
+                    : mFabOriginalX + mFab.getWidth();
         } else {
             return mFabOriginalX;
         }
@@ -651,9 +651,17 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         path.moveTo(mFab.getX(), mFab.getY());
 
         if (mFabOriginalX > mRoot.getWidth() / 2f) {
-            x2 = mFabOriginalX - mFab.getWidth() / 4f;
+            if (mAppBar == null) {
+                x2 = mFabOriginalX - mFab.getWidth() / 4f;
+            } else {
+                x2 = mFabOriginalX - mFab.getWidth() / 4f;
+            }
         } else {
-            x2 = mFabOriginalX + mFab.getWidth() / 4f;
+            if (mAppBar == null) {
+                x2 = mFabOriginalX + mFab.getWidth() / 4f;
+            } else {
+                x2 = mFabOriginalX + mFab.getWidth() / 4f;
+            }
         }
 
         if (mMorphed) {
@@ -784,7 +792,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                     }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                         getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }else{
+                    } else {
                         //noinspection deprecation
                         getViewTreeObserver().removeGlobalOnLayoutListener(this);
                     }
