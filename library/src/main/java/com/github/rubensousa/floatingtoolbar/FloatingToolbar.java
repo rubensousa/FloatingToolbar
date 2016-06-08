@@ -51,6 +51,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 
@@ -162,7 +163,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         mRoot = getRootView();
         mDelay = calcDelay();
-        if (mFab != null && mFabOriginalX == 0 && mFabOriginalY == 0) {
+        if (mFab != null) {
             mFabOriginalY = mFab.getY();
             mFabNewY = mFabOriginalY;
             mFabOriginalX = mFab.getX();
@@ -543,7 +544,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                     mFab.setAlpha(0f);
                     mFab.setY(mFabNewY);
                     mFab.animate().alpha(1f)
-                            .setDuration(200 + mDelay)
+                            .setDuration(200)
                             .setInterpolator(new AccelerateDecelerateInterpolator()).start();
                 }
             }
@@ -768,9 +769,9 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         super.onRestoreInstanceState(savedState.getSuperState());
 
         if (savedState.morphed) {
-            post(new Runnable() {
+            getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
-                public void run() {
+                public void onGlobalLayout() {
                     mRoot = getRootView();
                     mOriginalX = getX();
                     if (mFab != null) {
@@ -780,6 +781,12 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                         setVisibility(View.VISIBLE);
                         mFab.setVisibility(View.INVISIBLE);
                         mMorphed = true;
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }else{
+                        //noinspection deprecation
+                        getViewTreeObserver().removeGlobalOnLayoutListener(this);
                     }
                 }
             });
