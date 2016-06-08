@@ -63,7 +63,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     private static final int DELAY_MIN_WIDTH = 300;
     private static final int DELAY_MAX_WIDTH = 900;
-    private static final int DELAX_MAX = 300;
+    private static final int DELAX_MAX = 150;
     private static final int FAB_MORPH_DURATION = 200;
     private static final int FAB_UNMORPH_DURATION = 200;
     private static final int FAB_UNMORPH_DELAY = 300;
