@@ -61,11 +61,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickListener,
         View.OnLongClickListener, AppBarLayout.OnOffsetChangedListener {
 
-    public interface OnFloatingToolbarListener {
-        // Called before menu is hown. Don any changes you want to menu, including SetMenu. Return true to prevent menu from showing
-        boolean handleShowFloatingMenu(FloatingToolbar toolbar);
-    }
-
     private static final int DELAY_MIN_WIDTH = 300;
     private static final int DELAY_MAX_WIDTH = 900;
     private static final int DELAY_MAX = 150;
@@ -84,6 +79,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private AppBarLayout mAppBar;
     private FloatingActionButton mFab;
     private View mCustomView;
+    private Menu mMenu;
 
     @MenuRes
     private int mMenuRes;
@@ -100,7 +96,6 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private float mFabNewY;
     private ItemClickListener mClickListener;
     private LinearLayoutCompat mMenuLayout;
-    private OnFloatingToolbarListener mFloatingToolbarListener = null;
 
     public FloatingToolbar(Context context) {
         this(context, null, 0);
@@ -112,8 +107,6 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     public FloatingToolbar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        if (isInEditMode())
-            return;
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FloatingToolbar, 0, 0);
 
         TypedValue outValue = new TypedValue();
@@ -151,7 +144,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
             mMenuLayout.setId(genViewId());
             addView(mMenuLayout, layoutParams);
-            addMenuItems(null);
+            addMenuItems();
         }
 
         if (!isInEditMode()) {
@@ -197,15 +190,15 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     }
 
     public void setMenu(@MenuRes int menuRes) {
-        mMenuLayout.removeAllViews();
-        Menu menu = new MenuBuilder(getContext());
-        new SupportMenuInflater(getContext()).inflate(menuRes, menu);
-        setMenu(menu);
+        mMenu = new MenuBuilder(getContext());
+        new SupportMenuInflater(getContext()).inflate(menuRes, mMenu);
+        setMenu(mMenu);
     }
 
     public void setMenu(Menu menu) {
+        mMenu = menu;
         mMenuLayout.removeAllViews();
-        addMenuItems(menu);
+        addMenuItems();
     }
 
     public void attachAppBarLayout(AppBarLayout appbar) {
@@ -213,39 +206,28 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         mAppBar.addOnOffsetChangedListener(this);
     }
 
-    @TargetApi(14)  // really we target earlier too, but we test within function
     public void attachFab(FloatingActionButton fab) {
         mFab = fab;
-        if (mFab == null)
-            return;
+
         mFab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mFloatingToolbarListener != null) {
-                    if (mFloatingToolbarListener.handleShowFloatingMenu(FloatingToolbar.this))
-                        return;
-                }
                 if (!mMorphed) {
                     show();
                 }
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            mFab.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    mFabOriginalY = top;
-                    mFabNewY = mFabOriginalY;
-                    mFabOriginalX = left;
-                    mFab.removeOnLayoutChangeListener(this);
-                }
-            });
-        }
-    }
-
-    public void setFloatingToolbarListener(OnFloatingToolbarListener listener) {
-        mFloatingToolbarListener = listener;
+        mFab.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                mFabOriginalY = top;
+                mFabNewY = mFabOriginalY;
+                mFabOriginalX = left;
+                mFab.removeOnLayoutChangeListener(this);
+            }
+        });
     }
 
     public void attachRecyclerView(RecyclerView recyclerView) {
@@ -260,13 +242,6 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         });
     }
 
-    public void setItemVisible(int itemID, boolean visible) {
-        View v = mMenuLayout.findViewById(itemID);
-        if (v != null)
-            v.setVisibility(visible ? View.VISIBLE : View.GONE);
-    }
-
-    @TargetApi(14)  // really we target earlier too, but we test within function
     public void show() {
         if (mFab == null) {
             throw new IllegalStateException("FloatingActionButton not attached." +
@@ -327,7 +302,6 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                 .setInterpolator(new AccelerateDecelerateInterpolator());
     }
 
-    @TargetApi(14)  // really we target earlier too, but we test within function
     public void hide() {
         if (mFab == null) {
             throw new IllegalStateException("FloatingActionButton not attached." +
@@ -369,23 +343,24 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
     }
 
-    private void addMenuItems(Menu menu) {
+    private void addMenuItems() {
 
-        if (menu == null) {
-            menu = new MenuBuilder(getContext());
-            new SupportMenuInflater(getContext()).inflate(mMenuRes, menu);
+        if (mMenu == null) {
+            mMenu = new MenuBuilder(getContext());
+            new SupportMenuInflater(getContext()).inflate(mMenuRes, mMenu);
         }
 
         LinearLayoutCompat.LayoutParams layoutParams
                 = new LinearLayoutCompat.LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.MATCH_PARENT, 1);
 
-        setWeightSum(menu.size());
+        setWeightSum(mMenu.size());
 
-        for (int i = 0; i < menu.size(); i++) {
-            MenuItem item = menu.getItem(i);
+        for (int i = 0; i < mMenu.size(); i++) {
+            MenuItem item = mMenu.getItem(i);
             if (item.isVisible()) {
                 AppCompatImageButton imageButton = new AppCompatImageButton(getContext());
+                //noinspection ResourceType
                 imageButton.setId(item.getItemId() == Menu.NONE ? genViewId() : item.getItemId());
                 imageButton.setBackgroundResource(mItemBackground);
                 imageButton.setImageDrawable(item.getIcon());
@@ -650,11 +625,11 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     /**
      * Calculate a delay that depends on the screen width so that animations don't happen too quick
      * on larger phones or tablets
-     * <p/>
+     * <p>
      * Base is 300dp.
-     * <p/>
+     * <p>
      * A root view with 300dp as width has 0 delay
-     * <p/>
+     * <p>
      * The max width is 1200dp, with a max delay of 200 ms
      *
      * @return a delay that depends on the view width
@@ -753,8 +728,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             return false;
         }
 
-        @TargetApi(14)  // really we target earlier too, but we test within function
-        private void updateTranslationForSnackbar(CoordinatorLayout parent, final FloatingToolbar layout) {
+        private void updateTranslationForSnackbar(CoordinatorLayout parent,
+                                                  final FloatingToolbar layout) {
 
             final float targetTransY = getTranslationYForSnackbar(parent, layout);
             if (mTranslationY == targetTransY) {
@@ -762,28 +737,25 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             }
 
             final float currentTransY = ViewCompat.getTranslationY(layout);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                if (mTranslationYAnimator != null && mTranslationYAnimator.isRunning()) {
-                    mTranslationYAnimator.cancel();
-                }
 
-                if (Math.abs(currentTransY - targetTransY) > (layout.getHeight() * 0.667f)) {
-                    if (mTranslationYAnimator == null) {
-                        mTranslationYAnimator = new ValueAnimator();
-                        mTranslationYAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-                        mTranslationYAnimator.addUpdateListener(
-                                new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator animator) {
-                                        ViewCompat.setTranslationY(layout, animator.getAnimatedFraction());
-                                    }
-                                });
-                    }
-                    mTranslationYAnimator.setFloatValues(currentTransY, targetTransY);
-                    mTranslationYAnimator.start();
-                } else {
-                    ViewCompat.setTranslationY(layout, targetTransY);
+            if (mTranslationYAnimator != null && mTranslationYAnimator.isRunning()) {
+                mTranslationYAnimator.cancel();
+            }
+
+            if (Math.abs(currentTransY - targetTransY) > (layout.getHeight() * 0.667f)) {
+                if (mTranslationYAnimator == null) {
+                    mTranslationYAnimator = new ValueAnimator();
+                    mTranslationYAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+                    mTranslationYAnimator.addUpdateListener(
+                            new ValueAnimator.AnimatorUpdateListener() {
+                                @Override
+                                public void onAnimationUpdate(ValueAnimator animator) {
+                                    ViewCompat.setTranslationY(layout, animator.getAnimatedFraction());
+                                }
+                            });
                 }
+                mTranslationYAnimator.setFloatValues(currentTransY, targetTransY);
+                mTranslationYAnimator.start();
             } else {
                 ViewCompat.setTranslationY(layout, targetTransY);
             }
@@ -814,7 +786,6 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         return state;
     }
 
-    @TargetApi(14)  // really we target earlier too, but we test within function
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
         if (!(state instanceof SavedState)) {
@@ -827,24 +798,20 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         super.onRestoreInstanceState(savedState.getSuperState());
 
         if (savedState.morphed) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                mFab.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                        mFabOriginalY = top;
-                        mFabNewY = mFabOriginalY;
-                        mFabOriginalX = left;
-                        setVisibility(View.VISIBLE);
-                        mFab.setVisibility(View.INVISIBLE);
-                        mMorphed = true;
-                        mFab.removeOnLayoutChangeListener(this);
-                    }
-                });
-            } else {
-                setVisibility(View.VISIBLE);
-                mFab.setVisibility(View.INVISIBLE);
-                mMorphed = true;
-            }
+            mFab.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                           int oldLeft, int oldTop, int oldRight,
+                                           int oldBottom) {
+                    mFabOriginalY = top;
+                    mFabNewY = mFabOriginalY;
+                    mFabOriginalX = left;
+                    setVisibility(View.VISIBLE);
+                    mFab.setVisibility(View.INVISIBLE);
+                    mMorphed = true;
+                    mFab.removeOnLayoutChangeListener(this);
+                }
+            });
         }
     }
 
