@@ -2,9 +2,10 @@
 <resources>
 
     <declare-styleable name="FloatingToolbar">
-        <attr name="floatingMenu" format="reference" />
-        <attr name="floatingItemBackground" format="reference" />
-        <attr name="floatingCustomView" format="reference" />
+        <attr name="handleFabClick" format="boolean"/>
+        <attr name="floatingMenu" format="reference"/>
+        <attr name="floatingItemBackground" format="reference"/>
+        <attr name="floatingCustomView" format="reference"/>
     </declare-styleable>
 
 </resources>

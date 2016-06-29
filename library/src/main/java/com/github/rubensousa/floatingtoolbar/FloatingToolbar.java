@@ -94,6 +94,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private float mFabOriginalX;
     private float mFabOriginalY;
     private float mFabNewY;
+    private boolean mHandleFabClick;
     private ItemClickListener mClickListener;
     private LinearLayoutCompat mMenuLayout;
 
@@ -120,8 +121,9 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground,
                 outValue, true);
 
-        mItemBackground = a.getResourceId(R.styleable.FloatingToolbar_floatingItemBackground, outValue.resourceId);
-
+        mHandleFabClick = a.getBoolean(R.styleable.FloatingToolbar_handleFabClick, true);
+        mItemBackground = a.getResourceId(R.styleable.FloatingToolbar_floatingItemBackground,
+                outValue.resourceId);
         mMenuRes = a.getResourceId(R.styleable.FloatingToolbar_floatingMenu, 0);
 
         int customView = a.getResourceId(R.styleable.FloatingToolbar_floatingCustomView, 0);
@@ -209,14 +211,16 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     public void attachFab(FloatingActionButton fab) {
         mFab = fab;
 
-        mFab.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!mMorphed) {
-                    show();
+        if (mHandleFabClick) {
+            mFab.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!mMorphed) {
+                        show();
+                    }
                 }
-            }
-        });
+            });
+        }
 
         mFab.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
@@ -625,11 +629,11 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     /**
      * Calculate a delay that depends on the screen width so that animations don't happen too quick
      * on larger phones or tablets
-     * <p>
+     * <p/>
      * Base is 300dp.
-     * <p>
+     * <p/>
      * A root view with 300dp as width has 0 delay
-     * <p>
+     * <p/>
      * The max width is 1200dp, with a max delay of 200 ms
      *
      * @return a delay that depends on the view width
