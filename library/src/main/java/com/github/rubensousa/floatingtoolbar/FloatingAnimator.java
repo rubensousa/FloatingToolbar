@@ -16,6 +16,7 @@
 
 package com.github.rubensousa.floatingtoolbar;
 
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -39,6 +40,7 @@ abstract class FloatingAnimator {
     private float mFabOriginalX;
     private float mFabOriginalY;
     private float mFabNewY;
+    private AppBarLayout mAppBar;
     private FloatingActionButton mFab;
     private FloatingToolbar mToolbar;
     private View mRootView;
@@ -53,6 +55,14 @@ abstract class FloatingAnimator {
 
     public void setFab(FloatingActionButton fab) {
         mFab = fab;
+    }
+
+    public void setAppBarLayout(AppBarLayout appBarLayout) {
+        mAppBar = appBarLayout;
+    }
+
+    public AppBarLayout getAppBar() {
+        return mAppBar;
     }
 
     public FloatingActionButton getFab() {
@@ -113,6 +123,7 @@ abstract class FloatingAnimator {
 
         // Place view a bit closer to the fab
         mToolbar.setX(fabEndX - mToolbar.getWidth() / 2f + mFab.getWidth());
+        mToolbar.setTranslationY(mFab.getTranslationY());
 
         // Start showing content view
         if (mContentView != null) {
@@ -153,21 +164,22 @@ abstract class FloatingAnimator {
      * A root view with 300dp as width has 0 delay
      * <p/>
      * The max width is 1200dp, with a max delay of 200 ms
-     *
      */
     public void updateDelay() {
-        float minWidth = FloatingToolbar.dpToPixels(mFab.getContext(), DELAY_MIN_WIDTH);
-        float maxWidth = FloatingToolbar.dpToPixels(mFab.getContext(), DELAY_MAX_WIDTH);
+        float minWidth = FloatingToolbar.dpToPixels(mToolbar.getContext(), DELAY_MIN_WIDTH);
+        float maxWidth = FloatingToolbar.dpToPixels(mToolbar.getContext(), DELAY_MAX_WIDTH);
         float diff = maxWidth - minWidth;
 
         int width = mToolbar.getWidth();
 
-        if (width < minWidth) {
+        if (width == 0 || width < minWidth) {
             mDelay = 0;
+            return;
         }
 
         if (width > maxWidth) {
             mDelay = DELAY_MAX;
+            return;
         }
 
         mDelay = (long) (DELAY_MAX / diff * (width - minWidth));

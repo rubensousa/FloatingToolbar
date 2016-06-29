@@ -148,8 +148,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
         mAnimator.updateDelay();
     }
 
@@ -200,6 +200,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     public void attachAppBarLayout(AppBarLayout appbar) {
         mAppBar = appbar;
         mAppBar.addOnOffsetChangedListener(this);
+        mAnimator.setAppBarLayout(mAppBar);
     }
 
     public void attachFab(FloatingActionButton fab) {
@@ -360,7 +361,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         private ValueAnimator mTranslationYAnimator;
 
         @Override
-        public boolean layoutDependsOn(CoordinatorLayout parent, FloatingToolbar child, View dependency) {
+        public boolean layoutDependsOn(CoordinatorLayout parent, FloatingToolbar child,
+                                       View dependency) {
             return dependency instanceof Snackbar.SnackbarLayout;
         }
 
@@ -372,6 +374,14 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                 updateTranslationForSnackbar(parent, child);
             }
             return false;
+        }
+
+        @Override
+        public void onDependentViewRemoved(CoordinatorLayout parent, FloatingToolbar child,
+                                           View dependency) {
+            if (dependency instanceof Snackbar.SnackbarLayout) {
+                updateTranslationForSnackbar(parent, child);
+            }
         }
 
         private void updateTranslationForSnackbar(CoordinatorLayout parent,
@@ -388,7 +398,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                 mTranslationYAnimator.cancel();
             }
 
-            if (Math.abs(currentTransY - targetTransY) > (layout.getHeight() * 0.667f)) {
+            if (layout.isShowing()
+                    && Math.abs(currentTransY - targetTransY) > (layout.getHeight() * 0.667f)) {
                 if (mTranslationYAnimator == null) {
                     mTranslationYAnimator = new ValueAnimator();
                     mTranslationYAnimator.setInterpolator(new AccelerateDecelerateInterpolator());

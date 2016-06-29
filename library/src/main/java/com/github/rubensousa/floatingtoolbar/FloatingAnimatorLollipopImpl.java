@@ -100,7 +100,7 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
                 super.onAnimationEnd(animation);
                 // Make sure the fab goes to the right place after the animation ends
                 // when the Appbar is attached
-                if (getFab().getY() != getFabNewY()) {
+                if (getAppBar() != null && getFab().getY() != getFabNewY()) {
                     getFab().setAlpha(0f);
                     getFab().setY(getFabNewY());
                     getFab().animate().alpha(1f)
@@ -179,7 +179,7 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
         if (show) {
             endY = getFloatingToolbar().getY();
         } else {
-            endY = getFabNewY();
+            endY = getFabNewY() + getFloatingToolbar().getTranslationY();
         }
 
         path.quadTo(x2, y2, endX, endY);
