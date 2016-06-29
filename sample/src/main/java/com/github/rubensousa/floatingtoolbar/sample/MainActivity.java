@@ -58,6 +58,11 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
                 }
             });
         }
+
+        // How to edit current menu
+        // Menu menu = mFloatingToolbar.getMenu();
+        // menu.findItem(R.id.action_copy).setVisible(false);
+        // mFloatingToolbar.setMenu(menu);
     }
 
     @Override

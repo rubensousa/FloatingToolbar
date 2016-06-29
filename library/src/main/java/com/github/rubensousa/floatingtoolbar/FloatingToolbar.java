@@ -168,6 +168,10 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         return mCustomView;
     }
 
+    public Menu getMenu() {
+        return mMenu;
+    }
+
     public void setCustomView(View view) {
         removeAllViews();
         mCustomView = view;
