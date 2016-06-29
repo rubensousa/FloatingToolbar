@@ -2,7 +2,8 @@
 <resources>
 
     <declare-styleable name="FloatingToolbar">
-        <attr name="handleFabClick" format="boolean"/>
+        <attr name="floatingToastOnLongClick" format="boolean"/>
+        <attr name="floatingHandleFabClick" format="boolean"/>
         <attr name="floatingMenu" format="reference"/>
         <attr name="floatingItemBackground" format="reference"/>
         <attr name="floatingCustomView" format="reference"/>

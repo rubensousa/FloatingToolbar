@@ -37,6 +37,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,6 +45,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -67,6 +69,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private boolean mMorphed;
     private boolean mMorphing;
     private boolean mHandleFabClick;
+    private boolean mShowToast;
+    private Toast mToast;
     private ItemClickListener mClickListener;
     private LinearLayoutCompat mMenuLayout;
     private FloatingAnimator mAnimator;
@@ -94,7 +98,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground,
                 outValue, true);
 
-        mHandleFabClick = a.getBoolean(R.styleable.FloatingToolbar_handleFabClick, true);
+        mShowToast = a.getBoolean(R.styleable.FloatingToolbar_floatingToastOnLongClick, true);
+        mHandleFabClick = a.getBoolean(R.styleable.FloatingToolbar_floatingHandleFabClick, true);
         mItemBackground = a.getResourceId(R.styleable.FloatingToolbar_floatingItemBackground,
                 outValue.resourceId);
         mMenuRes = a.getResourceId(R.styleable.FloatingToolbar_floatingMenu, 0);
@@ -316,6 +321,14 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
         if (mClickListener != null) {
             MenuItem item = (MenuItem) v.getTag();
+            if (mShowToast) {
+                if (mToast != null) {
+                    mToast.cancel();
+                }
+                mToast = Toast.makeText(getContext(), item.getTitle(), Toast.LENGTH_SHORT);
+                mToast.setGravity(Gravity.BOTTOM, 0, (int) (getHeight() * 1.25f));
+                mToast.show();
+            }
             mClickListener.onItemLongClick(item);
             return true;
         } else {
