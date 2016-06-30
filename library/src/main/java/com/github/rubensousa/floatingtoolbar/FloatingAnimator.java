@@ -173,7 +173,6 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
         // Fab can be a bit higher than the AppBar when this last covers the whole screen.
         mAppbarOffset = verticalOffset;
         mFabNewY = mFabOriginalY + mAppbarOffset;
-        Log.d("Offset", "" + getAppBarOffset());
     }
 
     /**
