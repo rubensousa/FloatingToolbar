@@ -52,7 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @CoordinatorLayout.DefaultBehavior(FloatingToolbar.Behavior.class)
 public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickListener,
-        View.OnLongClickListener, AppBarLayout.OnOffsetChangedListener, FloatingAnimator.FloatingAnimatorListener {
+        View.OnLongClickListener, FloatingAnimator.FloatingAnimatorListener {
 
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
@@ -62,6 +62,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     @DrawableRes
     private int mItemBackground;
 
+    private FloatingScrollListener mScrollListener;
+    private RecyclerView mRecyclerView;
     private AppBarLayout mAppBar;
     private FloatingActionButton mFab;
     private View mCustomView;
@@ -98,6 +100,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground,
                 outValue, true);
 
+        mScrollListener = new FloatingScrollListener(this);
         mShowToast = a.getBoolean(R.styleable.FloatingToolbar_floatingToastOnLongClick, true);
         mHandleFabClick = a.getBoolean(R.styleable.FloatingToolbar_floatingHandleFabClick, true);
         mItemBackground = a.getResourceId(R.styleable.FloatingToolbar_floatingItemBackground,
@@ -156,7 +159,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     @Override
     protected void onDetachedFromWindow() {
         if (mAppBar != null) {
-            mAppBar.removeOnOffsetChangedListener(this);
+            mAppBar.removeOnOffsetChangedListener(mAnimator);
         }
         super.onDetachedFromWindow();
     }
@@ -199,8 +202,14 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     public void attachAppBarLayout(AppBarLayout appbar) {
         mAppBar = appbar;
-        mAppBar.addOnOffsetChangedListener(this);
+        mAppBar.addOnOffsetChangedListener(mAnimator);
         mAnimator.setAppBarLayout(mAppBar);
+    }
+
+    public void detachAppBarLayout() {
+        mAppBar.removeOnOffsetChangedListener(mAnimator);
+        mAnimator.setAppBarLayout(null);
+        mAppBar = null;
     }
 
     public void attachFab(FloatingActionButton fab) {
@@ -231,7 +240,14 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         });
     }
 
+    public void detachFab() {
+        mAnimator.setFab(null);
+        mFab = null;
+    }
+
     public void attachRecyclerView(RecyclerView recyclerView) {
+        mRecyclerView = recyclerView;
+        mRecyclerView.addOnScrollListener(mScrollListener);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -241,6 +257,11 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                 }
             }
         });
+    }
+
+    public void detachRecyclerView() {
+        mRecyclerView.removeOnScrollListener(mScrollListener);
+        mRecyclerView = null;
     }
 
     public void show() {
@@ -335,12 +356,6 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         } else {
             return false;
         }
-    }
-
-    @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        // Fab can be a bit higher than the AppBar when this last covers the whole screen.
-        mAnimator.setFabNewY(mAnimator.getFabOriginalY() + verticalOffset);
     }
 
     @Override
