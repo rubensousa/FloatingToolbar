@@ -97,7 +97,6 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
         anim.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
                 // Make sure the fab goes to the right place after the animation ends
                 // when the Appbar is attached
                 if (getAppBar() != null && getFab().getY() != getFabNewY()) {
@@ -131,7 +130,6 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
         toolbarReveal.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
                 getFloatingToolbar().setVisibility(View.INVISIBLE);
                 getFab().setVisibility(View.VISIBLE);
                 getAnimationListener().onAnimationFinished();

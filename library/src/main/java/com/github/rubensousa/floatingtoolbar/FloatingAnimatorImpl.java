@@ -22,6 +22,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
@@ -36,20 +37,17 @@ class FloatingAnimatorImpl extends FloatingAnimator {
     public void show() {
         super.show();
         int rootWidth = getRootView().getWidth();
-        getFloatingToolbar().setScaleX(0f);
-
         float endFabX;
 
         if (getFabOriginalX() > rootWidth / 2f) {
-            endFabX = rootWidth / 2f + (getFabOriginalX() - rootWidth / 2f) / 4f;
+            endFabX = getFabOriginalX() - getFab().getWidth();
         } else {
-            endFabX = rootWidth / 2f - (getFabOriginalX() - rootWidth / 2f) / 4f;
+            endFabX = getFabOriginalX() + getFab().getWidth();
         }
-
 
         PropertyValuesHolder xProperty = PropertyValuesHolder.ofFloat(View.X, endFabX);
         PropertyValuesHolder yProperty
-                = PropertyValuesHolder.ofFloat(View.Y, getFabOriginalY() * 1.05f);
+                = PropertyValuesHolder.ofFloat(View.Y, getFloatingToolbar().getY() * 0.95f);
         PropertyValuesHolder scaleXProperty = PropertyValuesHolder.ofFloat(View.SCALE_X, 0);
         PropertyValuesHolder scaleYProperty = PropertyValuesHolder.ofFloat(View.SCALE_Y, 0);
 
@@ -59,22 +57,15 @@ class FloatingAnimatorImpl extends FloatingAnimator {
         animator.setInterpolator(new AccelerateInterpolator());
         animator.start();
 
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "scaleX", 1f);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(getFloatingToolbar(), "scaleX", 1f);
         objectAnimator.setDuration(CIRCULAR_REVEAL_DURATION);
         objectAnimator.setStartDelay(CIRCULAR_REVEAL_DELAY);
         objectAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         objectAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                super.onAnimationStart(animation);
                 getFloatingToolbar().setVisibility(View.VISIBLE);
                 getFab().setVisibility(View.INVISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                getAnimationListener().onAnimationFinished();
             }
         });
         objectAnimator.start();
@@ -83,9 +74,14 @@ class FloatingAnimatorImpl extends FloatingAnimator {
     @Override
     public void hide() {
         super.hide();
+
+        // A snackbar might have appeared, so we need to update the fab position again
+        getFab().setY(getFloatingToolbar().getY() * 0.95f);
+
         ViewCompat.animate(getFab())
                 .x(getFabOriginalX())
-                .y(getFabNewY() + getFloatingToolbar().getTranslationY())
+                .y(getFabNewY())
+                .translationY(getFloatingToolbar().getTranslationY())
                 .scaleX(1f)
                 .scaleY(1f)
                 .setStartDelay(FAB_UNMORPH_DELAY)
@@ -94,9 +90,23 @@ class FloatingAnimatorImpl extends FloatingAnimator {
                 .setListener(new ViewPropertyAnimatorListenerAdapter() {
                     @Override
                     public void onAnimationStart(View view) {
-                        super.onAnimationStart(view);
                         getFab().setVisibility(View.VISIBLE);
-                        ViewCompat.animate(getFab()).setListener(null);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(View view) {
+                        // Make sure the fab goes to the right place after the animation ends
+                        // when the Appbar is attached
+                        if (getAppBar() != null && getFab().getY() != getFabNewY()) {
+                            getFab().setAlpha(0f);
+                            getFab().setY(getFabNewY());
+                            getFab().setX(getFabOriginalX());
+                            ViewCompat.animate(getFab())
+                                    .alpha(1f)
+                                    .setDuration(200)
+                                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                                    .setListener(null);
+                        }
                     }
                 });
 
@@ -109,10 +119,9 @@ class FloatingAnimatorImpl extends FloatingAnimator {
 
                     @Override
                     public void onAnimationEnd(View view) {
-                        super.onAnimationEnd(view);
                         getFloatingToolbar().setVisibility(View.INVISIBLE);
-                        ViewCompat.animate(getFloatingToolbar()).setListener(null);
                         getAnimationListener().onAnimationFinished();
+                        ViewCompat.animate(getFloatingToolbar()).setListener(null);
                     }
                 });
     }

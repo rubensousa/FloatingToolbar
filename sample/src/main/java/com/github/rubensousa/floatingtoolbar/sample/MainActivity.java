@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -49,7 +50,8 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
         mFloatingToolbar.attachFab(fab);
         mFloatingToolbar.attachRecyclerView(recyclerView);
 
-        View customView = mFloatingToolbar.getCustomView();
+        // Usage with custom view
+        /*View customView = mFloatingToolbar.getCustomView();
         if (customView != null) {
             customView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
                     mFloatingToolbar.hide();
                 }
             });
-        }
+        }*/
 
         // How to edit current menu
         // Menu menu = mFloatingToolbar.getMenu();

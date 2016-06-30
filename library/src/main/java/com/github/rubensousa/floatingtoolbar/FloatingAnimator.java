@@ -16,12 +16,15 @@
 
 package com.github.rubensousa.floatingtoolbar;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
-abstract class FloatingAnimator {
+abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener {
 
     public static final int DELAY_MIN_WIDTH = 300;
     public static final int DELAY_MAX_WIDTH = 900;
@@ -40,6 +43,7 @@ abstract class FloatingAnimator {
     private float mFabOriginalX;
     private float mFabOriginalY;
     private float mFabNewY;
+    private float mAppbarOffset;
     private AppBarLayout mAppBar;
     private FloatingActionButton mFab;
     private FloatingToolbar mToolbar;
@@ -101,8 +105,8 @@ abstract class FloatingAnimator {
         return mFabOriginalX;
     }
 
-    public float getFabOriginalY() {
-        return mFabOriginalY;
+    public float getAppBarOffset() {
+        return mAppbarOffset;
     }
 
     public float getFabNewY() {
@@ -123,6 +127,8 @@ abstract class FloatingAnimator {
 
         // Place view a bit closer to the fab
         mToolbar.setX(fabEndX - mToolbar.getWidth() / 2f + mFab.getWidth());
+
+        // If there's a snackbar being shown, we need to change the translationY
         mToolbar.setTranslationY(mFab.getTranslationY());
 
         // Start showing content view
@@ -132,7 +138,14 @@ abstract class FloatingAnimator {
             mContentView.animate().alpha(1).scaleX(1f)
                     .setDuration(MENU_ANIMATION_DURATION + mDelay)
                     .setStartDelay(MENU_ANIMATION_DELAY + mDelay)
-                    .setInterpolator(new AccelerateDecelerateInterpolator());
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mAnimationListener.onAnimationFinished();
+                            mContentView.animate().setListener(null);
+                        }
+                    });
         }
 
         // Move FloatingToolbar to the original position
@@ -153,6 +166,14 @@ abstract class FloatingAnimator {
                     .setStartDelay(CIRCULAR_UNREVEAL_DELAY + mDelay)
                     .setDuration((MENU_ANIMATION_DURATION / 2) + mDelay);
         }
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        // Fab can be a bit higher than the AppBar when this last covers the whole screen.
+        mAppbarOffset = verticalOffset;
+        mFabNewY = mFabOriginalY + mAppbarOffset;
+        Log.d("Offset", "" + getAppBarOffset());
     }
 
     /**
