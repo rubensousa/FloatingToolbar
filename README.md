@@ -17,7 +17,7 @@ repositories{
 }
 
 dependencies {
-  compile 'com.github.rubensousa:FloatingToolbar:0.3'
+  compile 'com.github.rubensousa:FloatingToolbar:1.0.0'
 }
 ```
 #####2. Add FloatingToolbar as a direct child of CoordinatorLayout and before the FloatingActionButton:
@@ -93,6 +93,17 @@ mFloatingToolbar.hide();
 - app:floatingCustomView -> Layout resource
 
 ## Changelog
+
+### 1.0.0 (02/07/2016)
+- Improved behavior with SnackBar
+- Improved animation on APIs below 21
+- Improved animation duration on larger devices
+- Update support library to 24.0.0
+- Add getMenu() method
+- Add detach methods to disable events
+- Add floatingHandleFabClick attribute to handle fab click automatically (defaults to true)
+- Add floatingToastOnLongClick attribute to show a toast with the MenuItem's title (defaults to true)
+- Add support to anchored FAB
 
 ### 0.3 (29/04/2016)
 - Improved behavior with SnackBar (Still needs some fixes though)
