@@ -88,6 +88,8 @@ mFloatingToolbar.hide();
 
 ## Attributes
 
+- app:floatingToastOnLongClick -> boolean. Defaults to true
+- app:floatingHandleFabClick -> boolean. Defaults to true
 - app:floatingMenu -> Menu resource
 - app:floatingItemBackground -> Drawable resource
 - app:floatingCustomView -> Layout resource
