@@ -256,15 +256,6 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     public void attachRecyclerView(RecyclerView recyclerView) {
         mRecyclerView = recyclerView;
         mRecyclerView.addOnScrollListener(mScrollListener);
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                    hide();
-                }
-            }
-        });
     }
 
     public void detachRecyclerView() {
