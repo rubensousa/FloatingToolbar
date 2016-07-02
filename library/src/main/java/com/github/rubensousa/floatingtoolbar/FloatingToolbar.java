@@ -168,6 +168,14 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         return mMorphed;
     }
 
+    public void handleFabClick(boolean handle) {
+        mHandleFabClick = handle;
+    }
+
+    public boolean isHandlingFabClick() {
+        return mHandleFabClick;
+    }
+
     public void setClickListener(ItemClickListener listener) {
         mClickListener = listener;
     }
@@ -221,7 +229,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             mFab.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!mMorphed) {
+                    if (!mMorphed && mHandleFabClick) {
                         show();
                     }
                 }

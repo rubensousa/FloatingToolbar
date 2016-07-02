@@ -204,7 +204,6 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
         mDelay = (long) (DELAY_MAX / diff * (width - minWidth));
     }
 
-
     interface FloatingAnimatorListener {
         void onAnimationFinished();
     }
