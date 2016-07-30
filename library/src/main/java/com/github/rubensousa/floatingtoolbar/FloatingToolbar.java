@@ -24,6 +24,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.MenuRes;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -173,20 +174,20 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     }
 
     /**
-     * Check if the floating toolbar is being shown due a previous FAB click or a manual call to
-     * {@link #show() show()}
+     * Check if the FloatingToolbar is being shown due a previous FloatingActionButton click
+     * or a manual call to {@link #show() show()}
      *
-     * @return true if the floating toolbar is being shown and the fab is hidden
+     * @return true if the FloatingToolbar is being shown and the fab is hidden
      */
     public boolean isShowing() {
         return mMorphed;
     }
 
     /**
-     * Control whether the floating toolbar should handle fab clicks or force manual calls
+     * Control whether the FloatingToolbar should handle fab clicks or force manual calls
      * to {@link #show() show}
      *
-     * @param handle true if this floating toolbar should be shown automatically on fab click
+     * @param handle true if this FloatingToolbar should be shown automatically on fab click
      */
     public void handleFabClick(boolean handle) {
         mHandleFabClick = handle;
@@ -195,22 +196,44 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
     }
 
+    /**
+     * @return true if the FloatingToolbar is being shown automatically
+     * by handling FloatingActionButton clicks.
+     */
     public boolean isHandlingFabClick() {
         return mHandleFabClick;
     }
 
+    /**
+     * Set a ItemClickListener that'll receive item click events from the View built from a Menu.
+     *
+     * @param listener Listener that'll receive item click events
+     */
     public void setClickListener(ItemClickListener listener) {
         mClickListener = listener;
     }
 
+    /**
+     * @return The custom view associated to this FloatingToolbar, or null if there's none.
+     */
+    @Nullable
     public View getCustomView() {
         return mCustomView;
     }
 
+    /**
+     * @return The menu associated to this FloatingToolbar, or null if there's none
+     */
+    @Nullable
     public Menu getMenu() {
         return mMenu;
     }
 
+    /**
+     * Place a view inside this FlootingToolbar. It'll be animated automatically.
+     *
+     * @param view View to be shown inside this FloatingToolbar
+     */
     public void setCustomView(View view) {
         removeAllViews();
         mCustomView = view;
@@ -218,12 +241,22 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         addView(view);
     }
 
+    /**
+     * Set a menu from it's resource id.
+     *
+     * @param menuRes menu resource to be set
+     */
     public void setMenu(@MenuRes int menuRes) {
         mMenu = new MenuBuilder(getContext());
         new SupportMenuInflater(getContext()).inflate(menuRes, mMenu);
         setMenu(mMenu);
     }
 
+    /**
+     * Set a menu that'll be used to show a set of options using icons
+     *
+     * @param menu menu to be set
+     */
     public void setMenu(Menu menu) {
         mMenu = menu;
         mMenuLayout.removeAllViews();
@@ -231,19 +264,40 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         mAnimator.setContentView(mMenuLayout);
     }
 
-    public void attachAppBarLayout(AppBarLayout appbar) {
-        mAppBar = appbar;
-        mAppBar.addOnOffsetChangedListener(mAnimator);
-        mAnimator.setAppBarLayout(mAppBar);
+    /**
+     * Attach an AppBarLayout to receive expand and collapse events
+     * to adjust the FloatingActionButton position correctly
+     *
+     * @param appBar AppBarLayout to be attached
+     */
+    public void attachAppBarLayout(AppBarLayout appBar) {
+        if (appBar != null) {
+            mAppBar = appBar;
+            mAppBar.addOnOffsetChangedListener(mAnimator);
+            mAnimator.setAppBarLayout(mAppBar);
+        }
     }
 
     public void detachAppBarLayout() {
-        mAppBar.removeOnOffsetChangedListener(mAnimator);
-        mAnimator.setAppBarLayout(null);
-        mAppBar = null;
+        if (mAppBar != null) {
+            mAppBar.removeOnOffsetChangedListener(mAnimator);
+            mAnimator.setAppBarLayout(null);
+            mAppBar = null;
+        }
     }
 
+    /**
+     * Attach a FloatingActionButton that'll be used for the morph animation.
+     * <p>It will be hidden after {@link #show() show()} is called
+     * and shown after {@link #hide() hide()} is called.
+     * </p>
+     *
+     * @param fab FloatingActionButton to attach
+     */
     public void attachFab(FloatingActionButton fab) {
+        if (fab == null) {
+            return;
+        }
         mFab = fab;
         mAnimator.setFab(mFab);
         mAnimator.setFloatingAnimatorListener(this);
@@ -253,21 +307,47 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
     }
 
+    /**
+     * Detach the FloatingActionButton from this FloatingToolbar.
+     * <p>This will disable the auto morph on click.</p>
+     */
     public void detachFab() {
         mAnimator.setFab(null);
-        mFab = null;
+        if (mFab != null) {
+            mFab.setOnClickListener(null);
+            mFab = null;
+        }
     }
 
+    /**
+     * Attach a RecyclerView to hide this FloatingToolbar automatically when a scroll is detected.
+     *
+     * @param recyclerView RecyclerView to listen for scroll events
+     */
     public void attachRecyclerView(RecyclerView recyclerView) {
-        mRecyclerView = recyclerView;
-        mRecyclerView.addOnScrollListener(mScrollListener);
+        if (recyclerView != null) {
+            mRecyclerView = recyclerView;
+            mRecyclerView.addOnScrollListener(mScrollListener);
+        }
     }
 
+    /**
+     * Detach the current RecyclerView to stop hiding automatically this FloatingToolbar
+     * when a scroll is detected.
+     */
     public void detachRecyclerView() {
-        mRecyclerView.removeOnScrollListener(mScrollListener);
-        mRecyclerView = null;
+        if (mRecyclerView != null) {
+            mRecyclerView.removeOnScrollListener(mScrollListener);
+            mRecyclerView = null;
+        }
     }
 
+    /**
+     * This method will automatically morph the attached FloatingActionButton
+     * into this FloatingToolbar.
+     *
+     * @throws IllegalStateException if there's no FloatingActionButton attached
+     */
     public void show() {
         if (mFab == null) {
             throw new IllegalStateException("FloatingActionButton not attached." +
@@ -283,6 +363,11 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         mAnimator.show();
     }
 
+    /**
+     * This method will automatically morph the FloatingToolbar into the attached FloatingActionButton
+     *
+     * @throws IllegalStateException if there's no FloatingActionButton attached
+     */
     public void hide() {
         if (mFab == null) {
             throw new IllegalStateException("FloatingActionButton not attached." +
@@ -296,6 +381,9 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
     }
 
+    /**
+     * Place the menu items with icons inside a horizontal LinearLayout
+     */
     private void addMenuItems() {
 
         if (mMenu == null) {
@@ -369,8 +457,9 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     /**
      * Interface to listen to click events on views with MenuItems.
-     * <p/>
+     * <p>
      * Each method only gets called once, even if the user spams multiple clicks
+     * </p>
      */
     public interface ItemClickListener {
         void onItemClick(MenuItem item);
