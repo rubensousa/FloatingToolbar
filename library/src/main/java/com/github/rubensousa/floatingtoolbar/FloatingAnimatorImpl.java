@@ -38,10 +38,10 @@ class FloatingAnimatorImpl extends FloatingAnimator {
         int rootWidth = getRootView().getWidth();
         float endFabX;
 
-        if (getFabOriginalX() > rootWidth / 2f) {
-            endFabX = getFabOriginalX() - getFab().getWidth();
+        if (getFab().getLeft() > rootWidth / 2f) {
+            endFabX = getFab().getLeft() - getFab().getWidth();
         } else {
-            endFabX = getFabOriginalX() + getFab().getWidth();
+            endFabX = getFab().getLeft() + getFab().getWidth();
         }
 
         PropertyValuesHolder xProperty = PropertyValuesHolder.ofFloat(View.X, endFabX);
@@ -75,11 +75,14 @@ class FloatingAnimatorImpl extends FloatingAnimator {
         super.hide();
 
         // A snackbar might have appeared, so we need to update the fab position again
-        getFab().setY(getFloatingToolbar().getY() * 0.95f);
+        if (getAppBar() != null) {
+            getFab().setTranslationY(getFloatingToolbar().getTranslationY());
+        }
 
+        final int fabNewY = (int) (getFab().getY() + getAppBarOffset());
         ViewCompat.animate(getFab())
-                .x(getFabOriginalX())
-                .y(getFabNewY())
+                .x(getFab().getLeft())
+                .y(fabNewY)
                 .translationY(getFloatingToolbar().getTranslationY())
                 .scaleX(1f)
                 .scaleY(1f)
@@ -96,10 +99,9 @@ class FloatingAnimatorImpl extends FloatingAnimator {
                     public void onAnimationEnd(View view) {
                         // Make sure the fab goes to the right place after the animation ends
                         // when the Appbar is attached
-                        if (getAppBar() != null && getFab().getY() != getFabNewY()) {
+                        if (getAppBar() != null && getFab().getY() != fabNewY) {
                             getFab().setAlpha(0f);
-                            getFab().setY(getFabNewY());
-                            getFab().setX(getFabOriginalX());
+                            getFab().setY(fabNewY);
                             ViewCompat.animate(getFab())
                                     .alpha(1f)
                                     .setDuration(200)

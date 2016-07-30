@@ -235,17 +235,6 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                 }
             });
         }
-
-        mFab.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                mAnimator.setFabOriginalY(top);
-                mAnimator.setFabOriginalX(left);
-                mAnimator.setFabNewY(top);
-                mFab.removeOnLayoutChangeListener(this);
-            }
-        });
     }
 
     public void detachFab() {

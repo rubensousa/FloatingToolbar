@@ -92,7 +92,9 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
         super.hide();
 
         // A snackbar might have appeared, so we need to update the fab position again
-        getFab().setTranslationY(getFloatingToolbar().getTranslationY());
+        if (getAppBar() != null) {
+            getFab().setTranslationY(getFloatingToolbar().getTranslationY());
+        }
 
         ObjectAnimator anim = ObjectAnimator.ofFloat(getFab(), View.X, View.Y, createPath(false));
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -103,9 +105,9 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
             public void onAnimationEnd(Animator animation) {
                 // Make sure the fab goes to the right place after the animation ends
                 // when the Appbar is attached
-                if (getAppBar() != null && getFab().getY() != getFabNewY()) {
+                if (getAppBar() != null && getFab().getY() != getFab().getTop()) {
                     getFab().setAlpha(0f);
-                    getFab().setY(getFabNewY());
+                    getFab().setY(getFab().getTop());
                     getFab().animate().alpha(1f)
                             .setDuration(200)
                             .setInterpolator(new AccelerateDecelerateInterpolator()).start();
@@ -153,7 +155,7 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
     }
 
     private Path createPath(boolean show) {
-        float fabOriginalX = getFabOriginalX();
+        float fabOriginalX = getFab().getLeft();
         float x2;
         float y2 = getFloatingToolbar().getY();
         float endX;
@@ -181,7 +183,7 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
         if (show) {
             endY = getFloatingToolbar().getY();
         } else {
-            endY = getFabNewY() + getFloatingToolbar().getTranslationY();
+            endY = getFab().getTop() + getFloatingToolbar().getTranslationY();
         }
 
         path.quadTo(x2, y2, endX, endY);

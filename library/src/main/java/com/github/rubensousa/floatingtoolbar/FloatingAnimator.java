@@ -39,9 +39,6 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
     public static final int MENU_ANIMATION_DELAY = 200;
     public static final int MENU_ANIMATION_DURATION = 300;
 
-    private float mFabOriginalX;
-    private float mFabOriginalY;
-    private float mFabNewY;
     private float mAppbarOffset;
     private AppBarLayout mAppBar;
     private FloatingActionButton mFab;
@@ -88,28 +85,8 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
         mContentView = contentView;
     }
 
-    public void setFabOriginalX(int originalX) {
-        mFabOriginalX = originalX;
-    }
-
-    public void setFabOriginalY(int originalY) {
-        mFabOriginalY = originalY;
-    }
-
-    public void setFabNewY(float newY) {
-        mFabNewY = newY;
-    }
-
-    public float getFabOriginalX() {
-        return mFabOriginalX;
-    }
-
     public float getAppBarOffset() {
         return mAppbarOffset;
-    }
-
-    public float getFabNewY() {
-        return mFabNewY;
     }
 
     public long getDelay() {
@@ -121,8 +98,8 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
     }
 
     public void show() {
-        float fabEndX = mFabOriginalX > mRootView.getWidth() / 2f ?
-                mFabOriginalX - mFab.getWidth() : mFabOriginalX + mFab.getWidth();
+        float fabEndX = mFab.getLeft() > mRootView.getWidth() / 2f ?
+                mFab.getLeft() - mFab.getWidth() : mFab.getLeft() + mFab.getWidth();
 
         // Place view a bit closer to the fab
         mToolbar.setX(fabEndX - mToolbar.getWidth() / 2f + mFab.getWidth());
@@ -155,7 +132,7 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
 
     public void hide() {
 
-        mToolbar.animate().x(mFabOriginalX - mToolbar.getWidth() / 2f)
+        mToolbar.animate().x(mFab.getLeft() - mToolbar.getWidth() / 2f)
                 .setDuration(CIRCULAR_UNREVEAL_DURATION + mDelay)
                 .setStartDelay(TOOLBAR_UNREVEAL_DELAY + mDelay)
                 .setInterpolator(new AccelerateDecelerateInterpolator());
@@ -171,17 +148,16 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
     public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
         // Fab can be a bit higher than the AppBar when this last covers the whole screen.
         mAppbarOffset = verticalOffset;
-        mFabNewY = mFabOriginalY + mAppbarOffset;
     }
 
     /**
      * Calculate a delay that depends on the screen width so that animations don't happen too quick
      * on larger phones or tablets
-     * <p/>
+     * <p>
      * Base is 300dp.
-     * <p/>
+     * <p>
      * A root view with 300dp as width has 0 delay
-     * <p/>
+     * <p>
      * The max width is 1200dp, with a max delay of 200 ms
      */
     public void updateDelay() {
