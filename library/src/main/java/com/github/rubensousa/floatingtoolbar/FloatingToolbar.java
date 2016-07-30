@@ -76,6 +76,14 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private ItemClickListener mClickListener;
     private LinearLayoutCompat mMenuLayout;
     private FloatingAnimator mAnimator;
+    private OnClickListener mViewClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (!mMorphed && mHandleFabClick) {
+                show();
+            }
+        }
+    };
 
     public FloatingToolbar(Context context) {
         this(context, null, 0);
@@ -164,12 +172,27 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         super.onDetachedFromWindow();
     }
 
+    /**
+     * Check if the floating toolbar is being shown due a previous FAB click or a manual call to
+     * {@link #show() show()}
+     *
+     * @return true if the floating toolbar is being shown and the fab is hidden
+     */
     public boolean isShowing() {
         return mMorphed;
     }
 
+    /**
+     * Control whether the floating toolbar should handle fab clicks or force manual calls
+     * to {@link #show() show}
+     *
+     * @param handle true if this floating toolbar should be shown automatically on fab click
+     */
     public void handleFabClick(boolean handle) {
         mHandleFabClick = handle;
+        if (mHandleFabClick && mFab != null) {
+            mFab.setOnClickListener(mViewClickListener);
+        }
     }
 
     public boolean isHandlingFabClick() {
@@ -226,14 +249,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         mAnimator.setFloatingAnimatorListener(this);
 
         if (mHandleFabClick) {
-            mFab.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!mMorphed && mHandleFabClick) {
-                        show();
-                    }
-                }
-            });
+            mFab.setOnClickListener(mViewClickListener);
         }
     }
 
@@ -351,6 +367,11 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         mMorphing = false;
     }
 
+    /**
+     * Interface to listen to click events on views with MenuItems.
+     * <p/>
+     * Each method only gets called once, even if the user spams multiple clicks
+     */
     public interface ItemClickListener {
         void onItemClick(MenuItem item);
 
