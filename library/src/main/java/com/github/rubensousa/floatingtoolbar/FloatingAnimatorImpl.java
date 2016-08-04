@@ -76,10 +76,12 @@ class FloatingAnimatorImpl extends FloatingAnimator {
 
         // A snackbar might have appeared, so we need to update the fab position again
         if (getAppBar() != null) {
+            getFab().setY(getFloatingToolbar().getY());
+        } else {
             getFab().setTranslationY(getFloatingToolbar().getTranslationY());
         }
 
-        final int fabNewY = (int) (getFab().getY() + getAppBarOffset());
+        final int fabNewY = getFab().getTop();
         ViewCompat.animate(getFab())
                 .x(getFab().getLeft())
                 .y(fabNewY)
@@ -99,14 +101,8 @@ class FloatingAnimatorImpl extends FloatingAnimator {
                     public void onAnimationEnd(View view) {
                         // Make sure the fab goes to the right place after the animation ends
                         // when the Appbar is attached
-                        if (getAppBar() != null && getFab().getY() != fabNewY) {
-                            getFab().setAlpha(0f);
-                            getFab().setY(fabNewY);
-                            ViewCompat.animate(getFab())
-                                    .alpha(1f)
-                                    .setDuration(200)
-                                    .setInterpolator(new AccelerateDecelerateInterpolator())
-                                    .setListener(null);
+                        if (getAppBar() != null && getFab().getVisibility() == View.INVISIBLE) {
+                            getFab().show();
                         }
                         getAnimationListener().onAnimationFinished();
                     }
