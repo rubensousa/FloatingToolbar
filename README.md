@@ -17,7 +17,7 @@ repositories{
 }
 
 dependencies {
-  compile 'com.github.rubensousa:FloatingToolbar:1.0.0'
+  compile 'com.github.rubensousa:FloatingToolbar:1.1.0'
 }
 ```
 #####2. Add FloatingToolbar as a direct child of CoordinatorLayout and before the FloatingActionButton:
@@ -78,13 +78,47 @@ mFloatingToolbar.setClickListener(new FloatingToolbar.ItemClickListener() {
 mFloatingToolbar.attachRecyclerView(recyclerView);
 ```
 
-##### 7 . (Optional) Use show() and hide() to trigger the transition anytime:
+##### 7. (Optional) Use show() and hide() to trigger the transition anytime:
 
 ```java
 mFloatingToolbar.show();
 mFloatingToolbar.hide();
-```        
+```      
+  
+##### 8. (Optional) Add a MorphListener to listen to morph animation events
 
+```java
+mFloatingToolbar.addMorphListener(new FloatingToolbar.MorphListener() {
+    @Override
+    public void onMorphEnd() {
+        
+    }
+
+    @Override
+    public void onMorphStart() {
+
+    }
+
+    @Override
+    public void onUnmorphStart() {
+
+    }
+
+    @Override
+    public void onUnmorphEnd() {
+
+    }
+});
+```  
+
+###### If you set your Activity/Fragment as a listener, remove it on onDestroy to avoid memory leaks
+```java
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    mFloatingToolbar.removeMorphListener(this);
+}
+```
 
 ## Attributes
 
@@ -95,6 +129,14 @@ mFloatingToolbar.hide();
 - app:floatingCustomView -> Layout resource
 
 ## Changelog
+
+### 1.1.0 (04/08/2016)
+- Add MorphListener to receive morph animation events.
+- Fix issue that caused the FAB's position to be incorrect when the app window is resized.
+- Fix issue that caused the FAB's position to be incorrect when the FloatingToolbar is attached to an AppBarLayout on API < 21
+- Fix issue with animation on API < 21
+- Added sources and javadoc to the build
+- Update support library to 24.1.1
 
 ### 1.0.0 (02/07/2016)
 - Improved behavior with SnackBar
