@@ -345,12 +345,20 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
     }
 
+    /**
+     * Add a morph listener to listen for animation events
+     * @param listener MorphListener to be added
+     */
     public void addMorphListener(MorphListener listener) {
         if (!mMorphListeners.contains(listener)) {
             mMorphListeners.add(listener);
         }
     }
 
+    /**
+     * Remove a morph listener previous added
+     * @param listener MorphListener to be removed
+     */
     public void removeMorphListener(MorphListener listener) {
         mMorphListeners.remove(listener);
     }

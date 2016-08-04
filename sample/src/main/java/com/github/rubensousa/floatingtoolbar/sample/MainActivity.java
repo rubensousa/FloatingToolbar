@@ -6,22 +6,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.github.rubensousa.floatingtoolbar.FloatingToolbar;
-import com.github.rubensousa.floatingtoolbar.sample.R;
 
 public class MainActivity extends AppCompatActivity implements FloatingToolbar.ItemClickListener,
-        Toolbar.OnMenuItemClickListener, CustomAdapter.ClickListener {
+        Toolbar.OnMenuItemClickListener, CustomAdapter.ClickListener, FloatingToolbar.MorphListener {
 
     private Toolbar mToolbar;
     private FloatingToolbar mFloatingToolbar;
@@ -49,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
         mFloatingToolbar.setClickListener(this);
         mFloatingToolbar.attachFab(fab);
         mFloatingToolbar.attachRecyclerView(recyclerView);
+        mFloatingToolbar.addMorphListener(this);
 
         // Usage with custom view
         /*View customView = mFloatingToolbar.getCustomView();
@@ -65,6 +58,12 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
         // Menu menu = mFloatingToolbar.getMenu();
         // menu.findItem(R.id.action_copy).setVisible(false);
         // mFloatingToolbar.setMenu(menu);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mFloatingToolbar.removeMorphListener(this);
     }
 
     @Override
@@ -90,5 +89,25 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onMorphEnd() {
+
+    }
+
+    @Override
+    public void onMorphStart() {
+
+    }
+
+    @Override
+    public void onUnmorphStart() {
+
+    }
+
+    @Override
+    public void onUnmorphEnd() {
+
     }
 }
