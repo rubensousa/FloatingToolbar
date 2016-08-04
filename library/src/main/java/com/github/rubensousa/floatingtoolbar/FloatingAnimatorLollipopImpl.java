@@ -112,6 +112,7 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
                             .setDuration(200)
                             .setInterpolator(new AccelerateDecelerateInterpolator()).start();
                 }
+                getAnimationListener().onAnimationFinished();
             }
         });
         anim.start();
@@ -138,7 +139,6 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
             public void onAnimationEnd(Animator animation) {
                 getFloatingToolbar().setVisibility(View.INVISIBLE);
                 getFab().setVisibility(View.VISIBLE);
-                getAnimationListener().onAnimationFinished();
             }
         });
 

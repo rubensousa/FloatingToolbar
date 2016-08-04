@@ -108,6 +108,7 @@ class FloatingAnimatorImpl extends FloatingAnimator {
                                     .setInterpolator(new AccelerateDecelerateInterpolator())
                                     .setListener(null);
                         }
+                        getAnimationListener().onAnimationFinished();
                     }
                 });
 
@@ -121,7 +122,6 @@ class FloatingAnimatorImpl extends FloatingAnimator {
                     @Override
                     public void onAnimationEnd(View view) {
                         getFloatingToolbar().setVisibility(View.INVISIBLE);
-                        getAnimationListener().onAnimationFinished();
                         ViewCompat.animate(getFloatingToolbar()).setListener(null);
                     }
                 });

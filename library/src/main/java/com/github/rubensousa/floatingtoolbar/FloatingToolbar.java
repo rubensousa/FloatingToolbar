@@ -48,6 +48,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -77,6 +78,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private ItemClickListener mClickListener;
     private LinearLayoutCompat mMenuLayout;
     private FloatingAnimator mAnimator;
+    private List<MorphListener> mMorphListeners;
     private OnClickListener mViewClickListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -109,6 +111,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground,
                 outValue, true);
 
+        mMorphListeners = new ArrayList<>();
         mScrollListener = new FloatingScrollListener(this);
         mShowToast = a.getBoolean(R.styleable.FloatingToolbar_floatingToastOnLongClick, true);
         mHandleFabClick = a.getBoolean(R.styleable.FloatingToolbar_floatingHandleFabClick, true);
@@ -342,6 +345,16 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
     }
 
+    public void addMorphListener(MorphListener listener) {
+        if (!mMorphListeners.contains(listener)) {
+            mMorphListeners.add(listener);
+        }
+    }
+
+    public void removeMorphListener(MorphListener listener) {
+        mMorphListeners.remove(listener);
+    }
+
     /**
      * This method will automatically morph the attached FloatingActionButton
      * into this FloatingToolbar.
@@ -361,6 +374,9 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         mMorphed = true;
         mMorphing = true;
         mAnimator.show();
+        for (MorphListener morphListener : mMorphListeners) {
+            morphListener.onMorphStart();
+        }
     }
 
     /**
@@ -378,6 +394,9 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             mMorphed = false;
             mMorphing = true;
             mAnimator.hide();
+            for (MorphListener morphListener : mMorphListeners) {
+                morphListener.onUnmorphStart();
+            }
         }
     }
 
@@ -453,6 +472,15 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     @Override
     public void onAnimationFinished() {
         mMorphing = false;
+        if (!mMorphed) {
+            for (MorphListener morphListener : mMorphListeners) {
+                morphListener.onUnmorphEnd();
+            }
+        } else {
+            for (MorphListener morphListener : mMorphListeners) {
+                morphListener.onMorphEnd();
+            }
+        }
     }
 
     /**
@@ -465,6 +493,19 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         void onItemClick(MenuItem item);
 
         void onItemLongClick(MenuItem item);
+    }
+
+    /**
+     * Interface to listen to the morph animation
+     */
+    public interface MorphListener {
+        void onMorphEnd();
+
+        void onMorphStart();
+
+        void onUnmorphStart();
+
+        void onUnmorphEnd();
     }
 
     // FloatingActionButton.Behavior adapted

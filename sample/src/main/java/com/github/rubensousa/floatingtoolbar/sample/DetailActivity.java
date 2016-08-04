@@ -27,7 +27,7 @@ import android.view.View;
 
 import com.github.rubensousa.floatingtoolbar.FloatingToolbar;
 
-public class DetailActivity extends AppCompatActivity implements FloatingToolbar.ItemClickListener {
+public class DetailActivity extends AppCompatActivity implements FloatingToolbar.MorphListener {
 
     private FloatingActionButton mFabAppBar;
     private FloatingActionButton mFab;
@@ -50,7 +50,7 @@ public class DetailActivity extends AppCompatActivity implements FloatingToolbar
 
         // Don't handle fab click since we'll have 2 of them
         mFloatingToolbar.handleFabClick(false);
-        mFloatingToolbar.setClickListener(this);
+        mFloatingToolbar.addMorphListener(this);
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,13 +77,29 @@ public class DetailActivity extends AppCompatActivity implements FloatingToolbar
     }
 
     @Override
-    public void onItemClick(MenuItem item) {
+    protected void onDestroy() {
+        super.onDestroy();
+        mFloatingToolbar.removeMorphListener(this);
+    }
+
+    @Override
+    public void onMorphEnd() {
+
+    }
+
+    @Override
+    public void onMorphStart() {
+
+    }
+
+    @Override
+    public void onUnmorphEnd() {
         if (mShowingFromAppBar) {
             mFab.show();
         }
 
         if (mShowingFromNormal) {
-            mFabAppBar.show();
+            mAppBar.setExpanded(true, true);
         }
 
         mShowingFromAppBar = false;
@@ -91,7 +107,7 @@ public class DetailActivity extends AppCompatActivity implements FloatingToolbar
     }
 
     @Override
-    public void onItemLongClick(MenuItem item) {
+    public void onUnmorphStart() {
 
     }
 }
