@@ -24,19 +24,17 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.MenuRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -45,7 +43,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -519,81 +516,13 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     // FloatingActionButton.Behavior adapted
     public static class Behavior extends CoordinatorLayout.Behavior<FloatingToolbar> {
 
-        private float mTranslationY;
-        private ValueAnimator mTranslationYAnimator;
-
         @Override
-        public boolean layoutDependsOn(CoordinatorLayout parent, FloatingToolbar child,
-                                       View dependency) {
-            return dependency instanceof Snackbar.SnackbarLayout;
-        }
-
-        @Override
-        public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingToolbar child,
-                                              View dependency) {
-
-            if (dependency instanceof Snackbar.SnackbarLayout) {
-                updateTranslationForSnackbar(parent, child);
+        public void onAttachedToLayoutParams(@NonNull CoordinatorLayout.LayoutParams lp) {
+            if (lp.dodgeInsetEdges == Gravity.NO_GRAVITY) {
+                // If the developer hasn't set dodgeInsetEdges, lets set it to BOTTOM so that
+                // we dodge any Snackbars
+                lp.dodgeInsetEdges = Gravity.BOTTOM;
             }
-            return false;
-        }
-
-        @Override
-        public void onDependentViewRemoved(CoordinatorLayout parent, FloatingToolbar child,
-                                           View dependency) {
-            if (dependency instanceof Snackbar.SnackbarLayout) {
-                updateTranslationForSnackbar(parent, child);
-            }
-        }
-
-        private void updateTranslationForSnackbar(CoordinatorLayout parent,
-                                                  final FloatingToolbar layout) {
-
-            final float targetTransY = getTranslationYForSnackbar(parent, layout);
-            if (mTranslationY == targetTransY) {
-                return;
-            }
-
-            final float currentTransY = ViewCompat.getTranslationY(layout);
-
-            if (mTranslationYAnimator != null && mTranslationYAnimator.isRunning()) {
-                mTranslationYAnimator.cancel();
-            }
-
-            if (layout.isShowing()
-                    && Math.abs(currentTransY - targetTransY) > (layout.getHeight() * 0.667f)) {
-                if (mTranslationYAnimator == null) {
-                    mTranslationYAnimator = new ValueAnimator();
-                    mTranslationYAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-                    mTranslationYAnimator.addUpdateListener(
-                            new ValueAnimator.AnimatorUpdateListener() {
-                                @Override
-                                public void onAnimationUpdate(ValueAnimator animator) {
-                                    ViewCompat.setTranslationY(layout, animator.getAnimatedFraction());
-                                }
-                            });
-                }
-                mTranslationYAnimator.setFloatValues(currentTransY, targetTransY);
-                mTranslationYAnimator.start();
-            } else {
-                ViewCompat.setTranslationY(layout, targetTransY);
-            }
-
-            mTranslationY = targetTransY;
-        }
-
-        private float getTranslationYForSnackbar(CoordinatorLayout parent, FloatingToolbar layout) {
-            float minOffset = 0;
-            final List<View> dependencies = parent.getDependencies(layout);
-            for (int i = 0, z = dependencies.size(); i < z; i++) {
-                final View view = dependencies.get(i);
-                if (view instanceof Snackbar.SnackbarLayout && parent.doViewsOverlap(layout, view)) {
-                    minOffset = Math.min(minOffset,
-                            ViewCompat.getTranslationY(view) - view.getHeight());
-                }
-            }
-
-            return minOffset;
         }
     }
 
