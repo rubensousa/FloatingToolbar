@@ -685,8 +685,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     }
 
     static float dpToPixels(Context context, int dp) {
-        return context.getResources().getDisplayMetrics().densityDpi
-                / DisplayMetrics.DENSITY_DEFAULT * dp;
+        return dp * context.getResources().getDisplayMetrics().density;
     }
 
 }
