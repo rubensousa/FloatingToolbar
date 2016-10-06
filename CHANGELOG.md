@@ -1,6 +1,7 @@
 # Changelog
 
 ### 1.2.0 (06/10/2016)
+- Fixed animation issue when there was a snackbar
 - Added floatingAutoHide attribute
 - Updated support library to 24.2.1
 
