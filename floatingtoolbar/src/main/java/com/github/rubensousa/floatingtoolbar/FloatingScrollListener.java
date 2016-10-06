@@ -23,7 +23,7 @@ class FloatingScrollListener extends RecyclerView.OnScrollListener {
 
     private FloatingToolbar mToolbar;
 
-    public FloatingScrollListener(FloatingToolbar toolbar) {
+    FloatingScrollListener(FloatingToolbar toolbar) {
         mToolbar = toolbar;
     }
 

@@ -28,7 +28,7 @@ import android.view.animation.AccelerateInterpolator;
 
 class FloatingAnimatorImpl extends FloatingAnimator {
 
-    public FloatingAnimatorImpl(FloatingToolbar toolbar) {
+    FloatingAnimatorImpl(FloatingToolbar toolbar) {
         super(toolbar);
     }
 
