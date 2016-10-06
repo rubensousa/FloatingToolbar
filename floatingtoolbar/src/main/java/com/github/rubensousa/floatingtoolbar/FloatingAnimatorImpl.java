@@ -88,7 +88,7 @@ class FloatingAnimatorImpl extends FloatingAnimator {
                 .translationY(getFloatingToolbar().getTranslationY())
                 .scaleX(1f)
                 .scaleY(1f)
-                .setStartDelay(FAB_UNMORPH_DELAY)
+                .setStartDelay(200)
                 .setDuration(FAB_UNMORPH_DURATION)
                 .setInterpolator(new AccelerateInterpolator())
                 .setListener(new ViewPropertyAnimatorListenerAdapter() {
