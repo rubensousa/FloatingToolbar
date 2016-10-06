@@ -69,6 +69,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     boolean mMorphed;
     private boolean mMorphing;
     boolean mHandleFabClick;
+    private boolean mAutoHide;
     private boolean mShowToast;
     private Toast mToast;
     private ItemClickListener mClickListener;
@@ -113,6 +114,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         mHandleFabClick = a.getBoolean(R.styleable.FloatingToolbar_floatingHandleFabClick, true);
         mItemBackground = a.getResourceId(R.styleable.FloatingToolbar_floatingItemBackground,
                 outValue.resourceId);
+        mAutoHide = a.getBoolean(R.styleable.FloatingToolbar_floatingAutoHide, true);
         mMenuRes = a.getResourceId(R.styleable.FloatingToolbar_floatingMenu, 0);
 
         int customView = a.getResourceId(R.styleable.FloatingToolbar_floatingCustomView, 0);
@@ -193,6 +195,14 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         if (mHandleFabClick && mFab != null) {
             mFab.setOnClickListener(mViewClickListener);
         }
+    }
+
+    /**
+     * Enable or disable auto hide when a menu item is clicked. The default value is true.
+     * @param enable true if you want to enable auto hide
+     */
+    public void enableAutoHide(boolean enable){
+        mAutoHide = enable;
     }
 
     /**
@@ -343,6 +353,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     /**
      * Add a morph listener to listen for animation events
+     *
      * @param listener MorphListener to be added
      */
     public void addMorphListener(MorphListener listener) {
@@ -353,6 +364,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     /**
      * Remove a morph listener previous added
+     *
      * @param listener MorphListener to be removed
      */
     public void removeMorphListener(MorphListener listener) {
@@ -442,7 +454,9 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             return;
         }
 
-        hide();
+        if (mAutoHide) {
+            hide();
+        }
 
         if (mClickListener != null) {
             MenuItem item = (MenuItem) v.getTag();
