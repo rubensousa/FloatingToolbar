@@ -63,12 +63,12 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private FloatingScrollListener mScrollListener;
     private RecyclerView mRecyclerView;
     private AppBarLayout mAppBar;
-    private FloatingActionButton mFab;
+    FloatingActionButton mFab;
     private View mCustomView;
     private Menu mMenu;
-    private boolean mMorphed;
+    boolean mMorphed;
     private boolean mMorphing;
-    private boolean mHandleFabClick;
+    boolean mHandleFabClick;
     private boolean mShowToast;
     private Toast mToast;
     private ItemClickListener mClickListener;
