@@ -91,10 +91,7 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
     public void hide() {
         super.hide();
 
-        // A snackbar might have appeared, so we need to update the fab position again
-        if (getAppBar() != null) {
-            getFab().setTranslationY(getFloatingToolbar().getTranslationY());
-        }
+        getFab().setY(getFloatingToolbar().getY());
 
         ObjectAnimator anim = ObjectAnimator.ofFloat(getFab(), View.X, View.Y, createPath(false));
         anim.setInterpolator(new AccelerateDecelerateInterpolator());

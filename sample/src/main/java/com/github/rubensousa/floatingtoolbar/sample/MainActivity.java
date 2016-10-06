@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.action_snackbar) {
-            Snackbar.make(mToolbar, "Here's a SnackBar", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mToolbar, "Here's a SnackBar", Snackbar.LENGTH_INDEFINITE).show();
             return true;
         }
         return false;
