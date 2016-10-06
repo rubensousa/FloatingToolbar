@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.2.0 (06/10/2016)
+- Added floatingAutoHide attribute
+- Updated support library to 24.2.1
+
 ### 1.1.1 (20/08/2016)
 - Fixed dp to pixels conversion
 - Updated support library to 24.2.0
