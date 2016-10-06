@@ -16,7 +16,6 @@
 
 package com.github.rubensousa.floatingtoolbar;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
