@@ -109,16 +109,7 @@ mFloatingToolbar.addMorphListener(new FloatingToolbar.MorphListener() {
 
     }
 });
-```  
-
-##### If you set your Activity/Fragment as a listener, remove it on onDestroy to avoid memory leaks
-```java
-@Override
-protected void onDestroy() {
-    super.onDestroy();
-    mFloatingToolbar.removeMorphListener(this);
-}
-```
+``` 
 
 ## Attributes
 
