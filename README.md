@@ -12,13 +12,7 @@ Available from API 14.
 
 #####1. Add the following to your build.gradle:
 ```groovy
-repositories{
-  maven { url "https://jitpack.io" }
-}
-
-dependencies {
-  compile 'com.github.rubensousa:FloatingToolbar:1.1.1'
-}
+compile 'com.github.rubensousa:floatingtoolbar:1.2.0'
 ```
 #####2. Add FloatingToolbar as a direct child of CoordinatorLayout and before the FloatingActionButton:
 ```xml
@@ -118,6 +112,7 @@ mFloatingToolbar.addMorphListener(new FloatingToolbar.MorphListener() {
 - app:floatingMenu -> Menu resource
 - app:floatingItemBackground -> Drawable resource
 - app:floatingCustomView -> Layout resource
+- app:floatingAutoHide -> boolean. Defaults to true
 
 ## License
 
