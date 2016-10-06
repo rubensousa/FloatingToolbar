@@ -29,7 +29,9 @@ import android.view.animation.AccelerateInterpolator;
 
 class FloatingAnimatorLollipopImpl extends FloatingAnimator {
 
-    public FloatingAnimatorLollipopImpl(FloatingToolbar toolbar) {
+    private float mFabDiff;
+
+    FloatingAnimatorLollipopImpl(FloatingToolbar toolbar) {
         super(toolbar);
     }
 
@@ -91,7 +93,7 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
     public void hide() {
         super.hide();
 
-        getFab().setY(getFloatingToolbar().getY());
+        getFab().setTranslationY(getFloatingToolbar().getY() - getFab().getTop());
 
         ObjectAnimator anim = ObjectAnimator.ofFloat(getFab(), View.X, View.Y, createPath(false));
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -136,6 +138,11 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
             public void onAnimationEnd(Animator animation) {
                 getFloatingToolbar().setVisibility(View.INVISIBLE);
                 getFab().setVisibility(View.VISIBLE);
+                // Ugly workaround for fab having wrong position for a few ms
+                if (getFab().getTranslationY() < 0) {
+                    getFab().setAlpha(0f);
+                    getFab().animate().alpha(1).setDuration(2);
+                }
             }
         });
 
@@ -178,13 +185,14 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
         }
 
         if (show) {
-            endY = getFloatingToolbar().getY();
+            mFabDiff = mFabDiff == 0 ? getFloatingToolbar().getY() - getFab().getY() : mFabDiff;
+            endY = getFab().getTop() + mFabDiff;
         } else {
-            endY = getFab().getTop() + getFloatingToolbar().getTranslationY();
+            float transY = getFab().getTranslationY();
+            endY = transY < 0 ? getFab().getTop() + transY - mFabDiff : getFab().getTop();
         }
 
         path.quadTo(x2, y2, endX, endY);
-
         return path;
     }
 }
