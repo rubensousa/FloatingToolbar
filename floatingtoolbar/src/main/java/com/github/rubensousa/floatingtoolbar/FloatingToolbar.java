@@ -199,9 +199,10 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     /**
      * Enable or disable auto hide when a menu item is clicked. The default value is true.
+     *
      * @param enable true if you want to enable auto hide
      */
-    public void enableAutoHide(boolean enable){
+    public void enableAutoHide(boolean enable) {
         mAutoHide = enable;
     }
 
@@ -559,20 +560,9 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         super.onRestoreInstanceState(savedState.getSuperState());
 
         if (savedState.morphed) {
-            getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    } else {
-                        //noinspection deprecation
-                        getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    }
-                    setVisibility(View.VISIBLE);
-                    mFab.setVisibility(View.INVISIBLE);
-                    mMorphed = true;
-                }
-            });
+            mMorphed = true;
+            setVisibility(View.VISIBLE);
+            mFab.setVisibility(View.INVISIBLE);
         }
     }
 
