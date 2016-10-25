@@ -1,5 +1,8 @@
 # Changelog
 
+### 1.2.1 (25/10/2016)
+- Fixed state restore issue
+
 ### 1.2.0 (06/10/2016)
 - Fixed animation issue when there was a snackbar
 - Added floatingAutoHide attribute
