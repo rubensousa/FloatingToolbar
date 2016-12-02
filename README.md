@@ -114,6 +114,10 @@ mFloatingToolbar.addMorphListener(new FloatingToolbar.MorphListener() {
 - app:floatingCustomView -> Layout resource
 - app:floatingAutoHide -> boolean. Defaults to true
 
+## Apps using FloatingToolbar (Send a PR to add your app here)
+
+- [EuroMillions](https://play.google.com/store/apps/details?id=io.github.rubensousa.euromillions)
+
 ## License
 
     Copyright 2016 Rúben Sousa
