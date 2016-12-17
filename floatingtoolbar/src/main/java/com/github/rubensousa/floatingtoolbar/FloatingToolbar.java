@@ -23,11 +23,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.MenuRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.AppCompatImageButton;
@@ -47,7 +47,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@CoordinatorLayout.DefaultBehavior(FloatingToolbar.Behavior.class)
 public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickListener,
         View.OnLongClickListener, FloatingAnimator.FloatingAnimatorListener {
 
@@ -502,6 +501,26 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     }
 
     /**
+     * Show a snackbar behind the floating toolbar if it's showing
+     * @param snackbar Snackbar to be shown
+     */
+    public void showSnackBar(Snackbar snackbar) {
+
+        if (!isShowing()) {
+            snackbar.show();
+            return;
+        }
+
+        View view = snackbar.getView();
+
+        CoordinatorLayout.LayoutParams params
+                = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+        params.bottomMargin = getHeight();
+        view.setLayoutParams(params);
+        snackbar.show();
+    }
+
+    /**
      * Interface to listen to click events on views with MenuItems.
      * <p>
      * Each method only gets called once, even if the user spams multiple clicks
@@ -524,19 +543,6 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         void onUnmorphStart();
 
         void onUnmorphEnd();
-    }
-
-    // FloatingActionButton.Behavior adapted
-    public static class Behavior extends CoordinatorLayout.Behavior<FloatingToolbar> {
-
-        @Override
-        public void onAttachedToLayoutParams(@NonNull CoordinatorLayout.LayoutParams lp) {
-            if (lp.dodgeInsetEdges == Gravity.NO_GRAVITY) {
-                // If the developer hasn't set dodgeInsetEdges, lets set it to BOTTOM so that
-                // we dodge any Snackbars
-                lp.dodgeInsetEdges = Gravity.BOTTOM;
-            }
-        }
     }
 
     @Override
