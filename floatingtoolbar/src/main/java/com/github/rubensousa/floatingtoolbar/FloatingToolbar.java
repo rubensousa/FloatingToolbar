@@ -389,9 +389,6 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             return;
         }
 
-        mMorphed = true;
-        mMorphing = true;
-
         if (mSnackBarManager.hasSnackBar()) {
             mSnackBarManager.dismissAndShow();
         } else {
@@ -411,8 +408,6 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
 
         if (mMorphed && !mMorphing) {
-            mMorphed = false;
-            mMorphing = true;
 
             if (mSnackBarManager.hasSnackBar()) {
                 mSnackBarManager.dismissAndHide();
@@ -517,6 +512,9 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     }
 
     void dispatchShow() {
+        mMorphed = true;
+        mMorphing = true;
+
         mAnimator.show();
 
         for (MorphListener morphListener : mMorphListeners) {
@@ -525,6 +523,9 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     }
 
     void dispatchHide() {
+        mMorphed = false;
+        mMorphing = true;
+
         mAnimator.hide();
 
         for (MorphListener morphListener : mMorphListeners) {
@@ -587,14 +588,14 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     static class SavedState extends BaseSavedState {
 
-        public boolean morphed;
+        boolean morphed;
 
-        public SavedState(Parcel source) {
+        SavedState(Parcel source) {
             super(source);
             morphed = source.readByte() == 0x01;
         }
 
-        public SavedState(Parcelable superState) {
+        SavedState(Parcelable superState) {
             super(superState);
         }
 

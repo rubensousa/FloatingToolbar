@@ -16,7 +16,6 @@ class FloatingSnackBarManager implements FloatingToolbar.MorphListener {
             super.onDismissed(transientBottomBar, event);
             mFloatingToolbar.dispatchShow();
             transientBottomBar.removeCallback(this);
-            mSnackBar = null;
         }
     };
 
@@ -27,12 +26,21 @@ class FloatingSnackBarManager implements FloatingToolbar.MorphListener {
             super.onDismissed(transientBottomBar, event);
             mFloatingToolbar.dispatchHide();
             transientBottomBar.removeCallback(this);
+        }
+    };
+
+    private BaseTransientBottomBar.BaseCallback<Snackbar> mDismissCallback
+            = new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+        @Override
+        public void onDismissed(Snackbar transientBottomBar, int event) {
+            super.onDismissed(transientBottomBar, event);
             mSnackBar = null;
+            transientBottomBar.removeCallback(this);
         }
     };
 
     Snackbar mSnackBar;
-    private FloatingToolbar mFloatingToolbar;
+    FloatingToolbar mFloatingToolbar;
 
     public FloatingSnackBarManager(FloatingToolbar toolbar) {
         mFloatingToolbar = toolbar;
@@ -40,7 +48,7 @@ class FloatingSnackBarManager implements FloatingToolbar.MorphListener {
     }
 
     public boolean hasSnackBar() {
-        return mSnackBar != null && mSnackBar.isShown();
+        return mSnackBar != null && mSnackBar.isShownOrQueued();
     }
 
     public void dismissAndShow() {
@@ -56,6 +64,13 @@ class FloatingSnackBarManager implements FloatingToolbar.MorphListener {
     public void showSnackBar(final Snackbar snackbar) {
         // If we're currently morphing, show the snackbar after
         if (mFloatingToolbar.mMorphing) {
+            // If we're showing a snackbar,
+            // remove the callbacks since we'll have a new one
+            if (mSnackBar != null && mSnackBar.isShownOrQueued()) {
+                mSnackBar.removeCallback(mHideCallback);
+                mSnackBar.removeCallback(mShowCallback);
+                mSnackBar.removeCallback(mDismissCallback);
+            }
             mSnackBar = snackbar;
         } else {
             showSnackBarInternal(snackbar);
@@ -65,37 +80,37 @@ class FloatingSnackBarManager implements FloatingToolbar.MorphListener {
 
     private void showSnackBarInternal(Snackbar snackbar) {
 
+        // If we're showing a snackbar,
+        // remove the callbacks since we'll have a new one
+        if (mSnackBar != null && mSnackBar.isShownOrQueued()) {
+            mSnackBar.removeCallback(mDismissCallback);
+            mSnackBar.removeCallback(mHideCallback);
+            mSnackBar.removeCallback(mShowCallback);
+            mSnackBar.dismiss();
+        }
+
+        mSnackBar = snackbar;
+        mSnackBar.addCallback(mDismissCallback);
+
+        // We can show the snackbar now if the toolbar isn't showing
         if (!mFloatingToolbar.isShowing()) {
-            if (!mFloatingToolbar.mMorphing) {
-                mSnackBar = snackbar;
-                snackbar.show();
-            } else if (mSnackBar != null) {
-                mSnackBar.removeCallback(mHideCallback);
-                mSnackBar.removeCallback(mShowCallback);
-                mSnackBar.dismiss();
-                mSnackBar = snackbar;
-            }
+            mSnackBar.show();
             return;
         }
 
+        // If the toolbar is showing, we show the snackbar
+        // on top by applying a bottom margin
         View view = snackbar.getView();
         CoordinatorLayout.LayoutParams params
                 = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
         params.bottomMargin = mFloatingToolbar.getHeight();
         view.setLayoutParams(params);
-        snackbar.show();
-        snackbar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
-            @Override
-            public void onDismissed(Snackbar transientBottomBar, int event) {
-                super.onDismissed(transientBottomBar, event);
-                mSnackBar = null;
-            }
-        });
+        mSnackBar.show();
     }
 
     @Override
     public void onMorphEnd() {
-        if (mSnackBar != null && !mSnackBar.isShown()) {
+        if (mSnackBar != null && !mSnackBar.isShownOrQueued()) {
             showSnackBarInternal(mSnackBar);
         }
     }
@@ -112,7 +127,7 @@ class FloatingSnackBarManager implements FloatingToolbar.MorphListener {
 
     @Override
     public void onUnmorphEnd() {
-        if (mSnackBar != null && !mSnackBar.isShown()) {
+        if (mSnackBar != null && !mSnackBar.isShownOrQueued()) {
             showSnackBarInternal(mSnackBar);
         }
     }
