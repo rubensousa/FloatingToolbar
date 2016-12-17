@@ -12,7 +12,7 @@ Available from API 14.
 
 #####1. Add the following to your build.gradle:
 ```groovy
-compile 'com.github.rubensousa:floatingtoolbar:1.2.1'
+compile 'com.github.rubensousa:floatingtoolbar:1.3.0'
 ```
 #####2. Add FloatingToolbar as a direct child of CoordinatorLayout and before the FloatingActionButton:
 ```xml
@@ -66,20 +66,27 @@ mFloatingToolbar.setClickListener(new FloatingToolbar.ItemClickListener() {
             }
         });
 ```
-##### 6. (Optional) Attach a RecyclerView to hide the FloatingToolbar on scroll:
+
+##### 6. If you want to show a snackbar in the same layout as the FloatingToolbar, please use:
+
+```java
+mFloatingToolbar.showSnackBar(snackbar);
+```
+
+##### 7. (Optional) Attach a RecyclerView to hide the FloatingToolbar on scroll:
 
 ```java
 mFloatingToolbar.attachRecyclerView(recyclerView);
 ```
 
-##### 7. (Optional) Use show() and hide() to trigger the transition anytime:
+##### 8. (Optional) Use show() and hide() to trigger the transition anytime:
 
 ```java
 mFloatingToolbar.show();
 mFloatingToolbar.hide();
 ```      
   
-##### 8. (Optional) Add a MorphListener to listen to morph animation events
+##### 9. (Optional) Add a MorphListener to listen to morph animation events
 
 ```java
 mFloatingToolbar.addMorphListener(new FloatingToolbar.MorphListener() {
