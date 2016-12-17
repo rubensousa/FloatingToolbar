@@ -46,7 +46,8 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
 
         // Animate FAB elevation to 8dp
         anim = ObjectAnimator.ofFloat(getFab(), View.TRANSLATION_Z,
-                FloatingToolbar.dpToPixels(getFab().getContext(), 2));
+                getFloatingToolbar().getContext().getResources()
+                        .getDimension(R.dimen.floatingtoolbar_translationz));
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
         anim.setDuration(FAB_MORPH_DURATION + getDelay());
         anim.start();
@@ -82,7 +83,8 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
 
         // Animate FloatingToolbar elevation to 8dp
         anim = ObjectAnimator.ofFloat(getFloatingToolbar(), View.TRANSLATION_Z,
-                FloatingToolbar.dpToPixels(getFab().getContext(), 2));
+                getFloatingToolbar().getContext().getResources()
+                        .getDimension(R.dimen.floatingtoolbar_translationz));
         anim.setDuration(CIRCULAR_REVEAL_DURATION + getDelay());
         anim.setStartDelay(CIRCULAR_REVEAL_DELAY + getDelay());
         anim.start();

@@ -29,6 +29,7 @@ import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.AppCompatImageButton;
@@ -137,7 +138,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
         // Set elevation to 6dp
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setElevation(dpToPixels(context, 6));
+            setElevation(getResources().getDimension(R.dimen.floatingtoolbar_start_elevation));
         }
 
         if (mMenuRes != 0 && customView == 0) {
@@ -399,8 +400,9 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                 public void onDismissed(Snackbar transientBottomBar, int event) {
                     super.onDismissed(transientBottomBar, event);
                     dispatchShow();
-                    mSnackBar.removeCallback(this);
+                    transientBottomBar.removeCallback(this);
                     mSnackBar = null;
+
                 }
             });
             mSnackBar.dismiss();
@@ -430,7 +432,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                     public void onDismissed(Snackbar transientBottomBar, int event) {
                         super.onDismissed(transientBottomBar, event);
                         dispatchHide();
-                        mSnackBar.removeCallback(this);
+                        transientBottomBar.removeCallback(this);
                         mSnackBar = null;
                     }
                 });
@@ -611,6 +613,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
         if (savedState.morphed) {
             mMorphed = true;
+            ViewCompat.setTranslationZ(this,
+                    getResources().getDimension(R.dimen.floatingtoolbar_translationz));
             setVisibility(View.VISIBLE);
             mFab.setVisibility(View.INVISIBLE);
         }

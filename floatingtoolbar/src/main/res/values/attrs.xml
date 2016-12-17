@@ -10,4 +10,7 @@
         <attr name="floatingCustomView" format="reference"/>
     </declare-styleable>
 
+    <dimen name="floatingtoolbar_start_elevation">6dp</dimen>
+    <dimen name="floatingtoolbar_translationz">2dp</dimen>
+
 </resources>
