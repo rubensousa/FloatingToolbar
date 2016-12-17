@@ -25,8 +25,6 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.MenuRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.BaseTransientBottomBar;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
@@ -60,8 +58,6 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     @DrawableRes
     private int mItemBackground;
 
-    Snackbar mSnackBar;
-
     private FloatingScrollListener mScrollListener;
     private RecyclerView mRecyclerView;
     private AppBarLayout mAppBar;
@@ -69,7 +65,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private View mCustomView;
     private Menu mMenu;
     boolean mMorphed;
-    private boolean mMorphing;
+    boolean mMorphing;
     boolean mHandleFabClick;
     private boolean mAutoHide;
     private boolean mShowToast;
@@ -78,6 +74,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private LinearLayoutCompat mMenuLayout;
     private FloatingAnimator mAnimator;
     private List<MorphListener> mMorphListeners;
+    private FloatingSnackBarManager mSnackBarManager;
 
     private OnClickListener mViewClickListener = new OnClickListener() {
         @Override
@@ -161,6 +158,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         a.recycle();
 
         setOrientation(HORIZONTAL);
+        mSnackBarManager = new FloatingSnackBarManager(this);
     }
 
     @Override
@@ -394,18 +392,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         mMorphed = true;
         mMorphing = true;
 
-        if (mSnackBar != null) {
-            mSnackBar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                @Override
-                public void onDismissed(Snackbar transientBottomBar, int event) {
-                    super.onDismissed(transientBottomBar, event);
-                    dispatchShow();
-                    transientBottomBar.removeCallback(this);
-                    mSnackBar = null;
-
-                }
-            });
-            mSnackBar.dismiss();
+        if (mSnackBarManager.hasSnackBar()) {
+            mSnackBarManager.dismissAndShow();
         } else {
             dispatchShow();
         }
@@ -426,17 +414,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             mMorphed = false;
             mMorphing = true;
 
-            if (mSnackBar != null) {
-                mSnackBar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                    @Override
-                    public void onDismissed(Snackbar transientBottomBar, int event) {
-                        super.onDismissed(transientBottomBar, event);
-                        dispatchHide();
-                        transientBottomBar.removeCallback(this);
-                        mSnackBar = null;
-                    }
-                });
-                mSnackBar.dismiss();
+            if (mSnackBarManager.hasSnackBar()) {
+                mSnackBarManager.dismissAndHide();
             } else {
                 dispatchHide();
             }
@@ -502,21 +481,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
      * @param snackbar Snackbar to be shown
      */
     public void showSnackBar(Snackbar snackbar) {
-
-        mSnackBar = snackbar;
-
-        if (!isShowing()) {
-            snackbar.show();
-            return;
-        }
-
-        View view = snackbar.getView();
-
-        CoordinatorLayout.LayoutParams params
-                = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
-        params.bottomMargin = getHeight();
-        view.setLayoutParams(params);
-        snackbar.show();
+        mSnackBarManager.showSnackBar(snackbar);
     }
 
     /**
@@ -551,7 +516,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
     }
 
-    private void dispatchShow() {
+    void dispatchShow() {
         mAnimator.show();
 
         for (MorphListener morphListener : mMorphListeners) {
@@ -559,7 +524,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
     }
 
-    private void dispatchHide() {
+    void dispatchHide() {
         mAnimator.hide();
 
         for (MorphListener morphListener : mMorphListeners) {

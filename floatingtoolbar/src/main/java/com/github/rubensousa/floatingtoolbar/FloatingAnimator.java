@@ -132,12 +132,14 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
         mToolbar.animate().x(mFab.getLeft() - mToolbar.getWidth() / 2f)
                 .setDuration(CIRCULAR_UNREVEAL_DURATION + mDelay)
                 .setStartDelay(TOOLBAR_UNREVEAL_DELAY + mDelay)
-                .setInterpolator(new AccelerateDecelerateInterpolator());
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .setListener(null);
 
         if (mContentView != null) {
             mContentView.animate().alpha(0f).scaleX(0.7f)
                     .setStartDelay(CIRCULAR_UNREVEAL_DELAY + mDelay)
-                    .setDuration((MENU_ANIMATION_DURATION / 2) + mDelay);
+                    .setDuration((MENU_ANIMATION_DURATION / 2) + mDelay)
+                    .setListener(null);
         }
     }
 

@@ -68,12 +68,6 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
                 getFab().setVisibility(View.INVISIBLE);
                 getFloatingToolbar().setVisibility(View.VISIBLE);
             }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                getAnimationListener().onAnimationFinished();
-            }
         });
 
         toolbarReveal.setInterpolator(new AccelerateInterpolator());
