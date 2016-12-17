@@ -104,9 +104,6 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
         // Place view a bit closer to the fab
         mToolbar.setX(fabEndX - mToolbar.getWidth() / 2f + mFab.getWidth());
 
-        // If there's a snackbar being shown, we need to change the translationY
-        mToolbar.setTranslationY(mFab.getTranslationY());
-
         // Start showing content view
         if (mContentView != null) {
             mContentView.setAlpha(0f);

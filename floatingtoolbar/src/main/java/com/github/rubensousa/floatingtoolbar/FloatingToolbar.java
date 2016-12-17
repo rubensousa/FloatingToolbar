@@ -25,6 +25,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.MenuRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -58,6 +59,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     @DrawableRes
     private int mItemBackground;
 
+    Snackbar mSnackBar;
+
     private FloatingScrollListener mScrollListener;
     private RecyclerView mRecyclerView;
     private AppBarLayout mAppBar;
@@ -74,6 +77,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private LinearLayoutCompat mMenuLayout;
     private FloatingAnimator mAnimator;
     private List<MorphListener> mMorphListeners;
+
     private OnClickListener mViewClickListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -388,9 +392,20 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
         mMorphed = true;
         mMorphing = true;
-        mAnimator.show();
-        for (MorphListener morphListener : mMorphListeners) {
-            morphListener.onMorphStart();
+
+        if (mSnackBar != null) {
+            mSnackBar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                @Override
+                public void onDismissed(Snackbar transientBottomBar, int event) {
+                    super.onDismissed(transientBottomBar, event);
+                    dispatchShow();
+                    mSnackBar.removeCallback(this);
+                    mSnackBar = null;
+                }
+            });
+            mSnackBar.dismiss();
+        } else {
+            dispatchShow();
         }
     }
 
@@ -408,41 +423,20 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         if (mMorphed && !mMorphing) {
             mMorphed = false;
             mMorphing = true;
-            mAnimator.hide();
-            for (MorphListener morphListener : mMorphListeners) {
-                morphListener.onUnmorphStart();
-            }
-        }
-    }
 
-    /**
-     * Place the menu items with icons inside a horizontal LinearLayout
-     */
-    private void addMenuItems() {
-
-        if (mMenu == null) {
-            mMenu = new MenuBuilder(getContext());
-            new SupportMenuInflater(getContext()).inflate(mMenuRes, mMenu);
-        }
-
-        LinearLayoutCompat.LayoutParams layoutParams
-                = new LinearLayoutCompat.LayoutParams(LayoutParams.WRAP_CONTENT,
-                LayoutParams.MATCH_PARENT, 1);
-
-        setWeightSum(mMenu.size());
-
-        for (int i = 0; i < mMenu.size(); i++) {
-            MenuItem item = mMenu.getItem(i);
-            if (item.isVisible()) {
-                AppCompatImageButton imageButton = new AppCompatImageButton(getContext());
-                //noinspection ResourceType
-                imageButton.setId(item.getItemId() == Menu.NONE ? genViewId() : item.getItemId());
-                imageButton.setBackgroundResource(mItemBackground);
-                imageButton.setImageDrawable(item.getIcon());
-                imageButton.setOnClickListener(this);
-                imageButton.setOnLongClickListener(this);
-                imageButton.setTag(item);
-                mMenuLayout.addView(imageButton, layoutParams);
+            if (mSnackBar != null) {
+                mSnackBar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                    @Override
+                    public void onDismissed(Snackbar transientBottomBar, int event) {
+                        super.onDismissed(transientBottomBar, event);
+                        dispatchHide();
+                        mSnackBar.removeCallback(this);
+                        mSnackBar = null;
+                    }
+                });
+                mSnackBar.dismiss();
+            } else {
+                dispatchHide();
             }
         }
     }
@@ -502,9 +496,12 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     /**
      * Show a snackbar behind the floating toolbar if it's showing
+     *
      * @param snackbar Snackbar to be shown
      */
     public void showSnackBar(Snackbar snackbar) {
+
+        mSnackBar = snackbar;
 
         if (!isShowing()) {
             snackbar.show();
@@ -518,6 +515,54 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         params.bottomMargin = getHeight();
         view.setLayoutParams(params);
         snackbar.show();
+    }
+
+    /**
+     * Place the menu items with icons inside a horizontal LinearLayout
+     */
+    private void addMenuItems() {
+
+        if (mMenu == null) {
+            mMenu = new MenuBuilder(getContext());
+            new SupportMenuInflater(getContext()).inflate(mMenuRes, mMenu);
+        }
+
+        LinearLayoutCompat.LayoutParams layoutParams
+                = new LinearLayoutCompat.LayoutParams(LayoutParams.WRAP_CONTENT,
+                LayoutParams.MATCH_PARENT, 1);
+
+        setWeightSum(mMenu.size());
+
+        for (int i = 0; i < mMenu.size(); i++) {
+            MenuItem item = mMenu.getItem(i);
+            if (item.isVisible()) {
+                AppCompatImageButton imageButton = new AppCompatImageButton(getContext());
+                //noinspection ResourceType
+                imageButton.setId(item.getItemId() == Menu.NONE ? genViewId() : item.getItemId());
+                imageButton.setBackgroundResource(mItemBackground);
+                imageButton.setImageDrawable(item.getIcon());
+                imageButton.setOnClickListener(this);
+                imageButton.setOnLongClickListener(this);
+                imageButton.setTag(item);
+                mMenuLayout.addView(imageButton, layoutParams);
+            }
+        }
+    }
+
+    private void dispatchShow() {
+        mAnimator.show();
+
+        for (MorphListener morphListener : mMorphListeners) {
+            morphListener.onMorphStart();
+        }
+    }
+
+    private void dispatchHide() {
+        mAnimator.hide();
+
+        for (MorphListener morphListener : mMorphListeners) {
+            morphListener.onUnmorphStart();
+        }
     }
 
     /**

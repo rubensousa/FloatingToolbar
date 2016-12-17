@@ -93,8 +93,6 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
     public void hide() {
         super.hide();
 
-        getFab().setTranslationY(getFloatingToolbar().getY() - getFab().getTop());
-
         ObjectAnimator anim = ObjectAnimator.ofFloat(getFab(), View.X, View.Y, createPath(false));
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
         anim.setDuration(FAB_UNMORPH_DURATION + getDelay());
