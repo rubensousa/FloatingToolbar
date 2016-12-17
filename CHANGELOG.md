@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.3.0 (17/12/2016)
+- Restore translation-Z property
+- Add new method: showSnackBar. Use this to show snackbars when the toolbar is showing.
+- Update support library to 25.1.0
+
 ### 1.2.1 (25/10/2016)
 - Fixed state restore issue
 
