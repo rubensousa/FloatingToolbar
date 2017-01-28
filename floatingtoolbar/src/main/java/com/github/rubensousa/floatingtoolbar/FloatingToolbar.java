@@ -142,11 +142,15 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             mMenuLayout = new LinearLayoutCompat(context, attrs, defStyleAttr);
 
             LayoutParams layoutParams
-                    = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT);
+                    = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
             mMenuLayout.setId(genViewId());
             addView(mMenuLayout, layoutParams);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                mMenuLayout.setPaddingRelative(0, 0, 0, 0);
+            } else {
+                mMenuLayout.setPadding(0, 0, 0, 0);
+            }
             addMenuItems();
             mAnimator.setContentView(mMenuLayout);
         }
