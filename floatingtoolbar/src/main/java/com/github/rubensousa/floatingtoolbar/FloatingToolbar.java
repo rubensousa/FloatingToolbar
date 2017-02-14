@@ -120,7 +120,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         int customView = a.getResourceId(R.styleable.FloatingToolbar_floatingCustomView, 0);
 
         if (customView != 0) {
-            mCustomView = LayoutInflater.from(context).inflate(customView, this, true);
+            mCustomView = LayoutInflater.from(context).inflate(customView, this, false);
         }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -130,6 +130,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
 
         if (mCustomView != null) {
+            addView(mCustomView);
             mAnimator.setContentView(mCustomView);
         }
 
