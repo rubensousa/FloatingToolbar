@@ -18,9 +18,11 @@ package com.github.rubensousa.floatingtoolbar;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.os.Build;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener {
@@ -46,6 +48,7 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
     private View mRootView;
     private View mContentView;
     private long mDelay;
+    private boolean mMoveFabX;
     private FloatingAnimatorListener mAnimationListener;
 
     public FloatingAnimator(FloatingToolbar toolbar) {
@@ -55,6 +58,21 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
 
     public void setFab(FloatingActionButton fab) {
         mFab = fab;
+        mFab.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (mToolbar.getWidth() != 0) {
+                    mMoveFabX = mFab.getRight() > mToolbar.getWidth() * 0.75
+                            || mFab.getLeft() < mToolbar.getHeight() * 0.25;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        mFab.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    } else {
+                        //noinspection deprecation
+                        mFab.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    }
+                }
+            }
+        });
     }
 
     public void setAppBarLayout(AppBarLayout appBarLayout) {
@@ -93,16 +111,27 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
         return mDelay;
     }
 
+    public boolean shouldMoveFabX() {
+        return mMoveFabX;
+    }
+
     public View getRootView() {
         return mRootView;
     }
 
     public void show() {
-        float fabEndX = mFab.getLeft() > mRootView.getWidth() / 2f ?
-                mFab.getLeft() - mFab.getWidth() : mFab.getLeft() + mFab.getWidth();
+        if (mMoveFabX) {
+            float fabEndX = mFab.getLeft() > mRootView.getWidth() / 2f ?
+                    mFab.getLeft() - mFab.getWidth() : mFab.getLeft() + mFab.getWidth();
 
-        // Place view a bit closer to the fab
-        mToolbar.setX(fabEndX - mToolbar.getWidth() / 2f + mFab.getWidth());
+            // Place view a bit closer to the fab
+            mToolbar.setX(fabEndX - mToolbar.getWidth() / 2f + mFab.getWidth());
+
+            // Move FloatingToolbar to the original position
+            mToolbar.animate().x(mToolbar.getLeft()).setStartDelay(CIRCULAR_REVEAL_DELAY + mDelay)
+                    .setDuration((long) (CIRCULAR_REVEAL_DURATION) + mDelay)
+                    .setInterpolator(new AccelerateDecelerateInterpolator());
+        }
 
         // Start showing content view
         if (mContentView != null) {
@@ -120,21 +149,16 @@ abstract class FloatingAnimator implements AppBarLayout.OnOffsetChangedListener 
                         }
                     });
         }
-
-        // Move FloatingToolbar to the original position
-        mToolbar.animate().x(mToolbar.getLeft()).setStartDelay(CIRCULAR_REVEAL_DELAY + mDelay)
-                .setDuration((long) (CIRCULAR_REVEAL_DURATION) + mDelay)
-                .setInterpolator(new AccelerateDecelerateInterpolator());
     }
 
     public void hide() {
-
-        mToolbar.animate().x(mFab.getLeft() - mToolbar.getWidth() / 2f)
-                .setDuration(CIRCULAR_UNREVEAL_DURATION + mDelay)
-                .setStartDelay(TOOLBAR_UNREVEAL_DELAY + mDelay)
-                .setInterpolator(new AccelerateDecelerateInterpolator())
-                .setListener(null);
-
+        if (mMoveFabX) {
+            mToolbar.animate().x(mFab.getLeft() - mToolbar.getWidth() / 2f)
+                    .setDuration(CIRCULAR_UNREVEAL_DURATION + mDelay)
+                    .setStartDelay(TOOLBAR_UNREVEAL_DELAY + mDelay)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .setListener(null);
+        }
         if (mContentView != null) {
             mContentView.animate().alpha(0f).scaleX(0.7f)
                     .setStartDelay(CIRCULAR_UNREVEAL_DELAY + mDelay)

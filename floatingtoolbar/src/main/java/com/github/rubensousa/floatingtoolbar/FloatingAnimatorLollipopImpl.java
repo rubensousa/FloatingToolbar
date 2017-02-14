@@ -159,6 +159,21 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
         float endX;
         float endY;
 
+        if (show) {
+            mFabDiff = mFabDiff == 0 ? getFloatingToolbar().getY() - getFab().getY() : mFabDiff;
+            endY = getFab().getTop() + mFabDiff;
+        } else {
+            float transY = getFab().getTranslationY();
+            endY = transY < 0 ? getFab().getTop() + transY - mFabDiff : getFab().getTop();
+        }
+
+        if (!shouldMoveFabX()) {
+            Path path = new Path();
+            path.moveTo(getFab().getX(), getFab().getY());
+            path.moveTo(getFab().getX(), endY);
+            return path;
+        }
+
         if (!show) {
             endX = fabOriginalX;
         } else {
@@ -176,14 +191,6 @@ class FloatingAnimatorLollipopImpl extends FloatingAnimator {
             x2 = fabOriginalX - getFab().getWidth() / 4f;
         } else {
             x2 = fabOriginalX + getFab().getWidth() / 4f;
-        }
-
-        if (show) {
-            mFabDiff = mFabDiff == 0 ? getFloatingToolbar().getY() - getFab().getY() : mFabDiff;
-            endY = getFab().getTop() + mFabDiff;
-        } else {
-            float transY = getFab().getTranslationY();
-            endY = transY < 0 ? getFab().getTop() + transY - mFabDiff : getFab().getTop();
         }
 
         path.quadTo(x2, y2, endX, endY);

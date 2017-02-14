@@ -38,10 +38,14 @@ class FloatingAnimatorImpl extends FloatingAnimator {
         int rootWidth = getRootView().getWidth();
         float endFabX;
 
-        if (getFab().getLeft() > rootWidth / 2f) {
-            endFabX = getFab().getLeft() - getFab().getWidth();
+        if (shouldMoveFabX()) {
+            if (getFab().getLeft() > rootWidth / 2f) {
+                endFabX = getFab().getLeft() - getFab().getWidth();
+            } else {
+                endFabX = getFab().getLeft() + getFab().getWidth();
+            }
         } else {
-            endFabX = getFab().getLeft() + getFab().getWidth();
+            endFabX = getFab().getLeft();
         }
 
         PropertyValuesHolder xProperty = PropertyValuesHolder.ofFloat(View.X, endFabX);
