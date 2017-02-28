@@ -63,7 +63,7 @@ class FloatingSnackBarManager implements FloatingToolbar.MorphListener {
 
     public void showSnackBar(final Snackbar snackbar) {
         // If we're currently morphing, show the snackbar after
-        if (mFloatingToolbar.mMorphing) {
+        if (mFloatingToolbar.mAnimating) {
             // If we're showing a snackbar,
             // remove the callbacks since we'll have a new one
             if (mSnackBar != null && mSnackBar.isShownOrQueued()) {
