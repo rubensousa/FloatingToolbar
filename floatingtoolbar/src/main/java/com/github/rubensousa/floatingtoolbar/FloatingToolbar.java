@@ -64,8 +64,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     FloatingActionButton mFab;
     private View mCustomView;
     private Menu mMenu;
-    boolean mMorphed;
-    boolean mMorphing;
+    boolean mShowing;
+    boolean mAnimating;
     boolean mHandleFabClick;
     private boolean mAutoHide;
     private boolean mShowToast;
@@ -79,7 +79,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     private OnClickListener mViewClickListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (!mMorphed && mHandleFabClick) {
+            if (!mShowing && mHandleFabClick) {
                 show();
             }
         }
@@ -186,7 +186,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
      * @return true if the FloatingToolbar is being shown and the fab is hidden
      */
     public boolean isShowing() {
-        return mMorphed;
+        return mShowing;
     }
 
     /**
@@ -389,7 +389,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                     "Please, use attachFab(FloatingActionButton fab).");
         }
 
-        if (mMorphing) {
+        if (mAnimating || mShowing) {
             return;
         }
 
@@ -411,7 +411,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
                     "Please, use attachFab(FloatingActionButton fab).");
         }
 
-        if (mMorphed && !mMorphing) {
+        if (mShowing && !mAnimating) {
 
             if (mSnackBarManager.hasSnackBar()) {
                 mSnackBarManager.dismissAndHide();
@@ -423,7 +423,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        if (!mMorphed || mMorphing) {
+        if (!mShowing || mAnimating) {
             return;
         }
 
@@ -439,7 +439,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     @Override
     public boolean onLongClick(View v) {
-        if (!mMorphed || mMorphing) {
+        if (!mShowing || mAnimating) {
             return false;
         }
 
@@ -462,8 +462,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     @Override
     public void onAnimationFinished() {
-        mMorphing = false;
-        if (!mMorphed) {
+        mAnimating = false;
+        if (!mShowing) {
             for (MorphListener morphListener : mMorphListeners) {
                 morphListener.onUnmorphEnd();
             }
@@ -516,8 +516,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     }
 
     void dispatchShow() {
-        mMorphed = true;
-        mMorphing = true;
+        mShowing = true;
+        mAnimating = true;
 
         mAnimator.show();
 
@@ -527,8 +527,8 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     }
 
     void dispatchHide() {
-        mMorphed = false;
-        mMorphing = true;
+        mShowing = false;
+        mAnimating = true;
 
         mAnimator.hide();
 
@@ -566,7 +566,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
         SavedState state = new SavedState(superState);
-        state.morphed = mMorphed;
+        state.morphed = mShowing;
         return state;
     }
 
@@ -582,7 +582,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         super.onRestoreInstanceState(savedState.getSuperState());
 
         if (savedState.morphed) {
-            mMorphed = true;
+            mShowing = true;
             ViewCompat.setTranslationZ(this,
                     getResources().getDimension(R.dimen.floatingtoolbar_translationz));
             setVisibility(View.VISIBLE);
