@@ -12,7 +12,7 @@ Available from API 14.
 
 #####1. Add the following to your build.gradle:
 ```groovy
-compile 'com.github.rubensousa:floatingtoolbar:1.4.2'
+compile 'com.github.rubensousa:floatingtoolbar:1.4.3'
 ```
 #####2. Add FloatingToolbar as a direct child of CoordinatorLayout and before the FloatingActionButton:
 ```xml
