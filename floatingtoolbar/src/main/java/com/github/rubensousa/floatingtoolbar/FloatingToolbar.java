@@ -535,12 +535,18 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
 
     void dispatchHide() {
         mShowing = false;
-        mAnimating = true;
 
-        mAnimator.hide();
-
-        for (MorphListener morphListener : mMorphListeners) {
-            morphListener.onUnmorphStart();
+        if (getWidth() == 0 && getHeight() == 0) {
+            setVisibility(View.INVISIBLE);
+            if (mFab != null) {
+                mFab.setVisibility(View.VISIBLE);
+            }
+        }else {
+            mAnimator.hide();
+            mAnimating = true;
+            for (MorphListener morphListener : mMorphListeners) {
+                morphListener.onUnmorphStart();
+            }
         }
     }
 
