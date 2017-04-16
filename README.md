@@ -10,11 +10,11 @@ Available from API 14.
 
 ## How to use
 
-#####1. Add the following to your build.gradle:
+##### 1. Add the following to your build.gradle:
 ```groovy
 compile 'com.github.rubensousa:floatingtoolbar:1.4.4'
 ```
-#####2. Add FloatingToolbar as a direct child of CoordinatorLayout and before the FloatingActionButton:
+##### 2. Add FloatingToolbar as a direct child of CoordinatorLayout and before the FloatingActionButton:
 ```xml
 <android.support.design.widget.CoordinatorLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -44,9 +44,9 @@ compile 'com.github.rubensousa:floatingtoolbar:1.4.4'
         
 </android.support.design.widget.CoordinatorLayout>
 ```
-#####3. Specify a menu resource file or custom layout with app:floatingMenu or app:floatingCustomView
+##### 3. Specify a menu resource file or custom layout with app:floatingMenu or app:floatingCustomView
 
-#####4. Attach the FAB to the FloatingToolbar to automatically start the transition on click event:
+##### 4. Attach the FAB to the FloatingToolbar to automatically start the transition on click event:
 
 ```java
 mFloatingToolbar.attachFab(fab);
