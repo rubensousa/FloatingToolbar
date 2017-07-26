@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.github.rubensousa.floatingtoolbar.FloatingToolbar;
+import com.github.rubensousa.floatingtoolbar.FloatingToolbarMenuBuilder;
 
 public class MainActivity extends AppCompatActivity implements FloatingToolbar.ItemClickListener,
         Toolbar.OnMenuItemClickListener, CustomAdapter.ClickListener, FloatingToolbar.MorphListener {
@@ -23,10 +24,10 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        mFloatingToolbar = (FloatingToolbar) findViewById(R.id.floatingToolbar);
+        mToolbar = findViewById(R.id.toolbar);
+        FloatingActionButton fab = findViewById(R.id.fab);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        mFloatingToolbar = findViewById(R.id.floatingToolbar);
 
         mToolbar.setTitle(R.string.app_name);
         mToolbar.inflateMenu(R.menu.menu_toolbar);
@@ -42,6 +43,12 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
         mFloatingToolbar.attachFab(fab);
         mFloatingToolbar.attachRecyclerView(recyclerView);
         mFloatingToolbar.addMorphListener(this);
+
+
+        //Create a custom menu
+       /* mFloatingToolbar.setMenu(new FloatingToolbarMenuBuilder(this)
+                .addItem(R.drawable.ic_google_plus_box, "Google")
+                .build());*/
 
         // Usage with custom view
         /*View customView = mFloatingToolbar.getCustomView();

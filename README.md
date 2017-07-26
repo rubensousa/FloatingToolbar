@@ -10,9 +10,9 @@ Available from API 14.
 
 ## How to use
 
-##### 1. Add the following to your build.gradle:
+#####1. Add the following to your build.gradle:
 ```groovy
-compile 'com.github.rubensousa:floatingtoolbar:1.4.4'
+compile 'com.github.rubensousa:floatingtoolbar:1.5.0'
 ```
 ##### 2. Add FloatingToolbar as a direct child of CoordinatorLayout and before the FloatingActionButton:
 ```xml
