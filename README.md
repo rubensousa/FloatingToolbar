@@ -10,7 +10,7 @@ Available from API 14.
 
 ## How to use
 
-#####1. Add the following to your build.gradle:
+##### 1. Add the following to your build.gradle:
 ```groovy
 compile 'com.github.rubensousa:floatingtoolbar:1.5.0'
 ```
