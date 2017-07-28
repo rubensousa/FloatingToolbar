@@ -20,7 +20,6 @@ package com.github.rubensousa.floatingtoolbar;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
 import android.support.v7.view.menu.MenuBuilder;
 import android.view.Menu;
@@ -34,33 +33,33 @@ public class FloatingToolbarMenuBuilder {
         menuBuilder = new MenuBuilder(context);
     }
 
-    public FloatingToolbarMenuBuilder addItem(@IdRes int id, Drawable icon, String title) {
+    public FloatingToolbarMenuBuilder addItem(int id, Drawable icon, String title) {
         menuBuilder.add(Menu.NONE, id, Menu.NONE, title).setIcon(icon);
         return this;
     }
 
-    public FloatingToolbarMenuBuilder addItem(@IdRes int id, Drawable icon, @StringRes int title) {
+    public FloatingToolbarMenuBuilder addItem(int id, Drawable icon, @StringRes int title) {
         menuBuilder.add(Menu.NONE, id, Menu.NONE, title).setIcon(icon);
         return this;
     }
 
-    public FloatingToolbarMenuBuilder addItem(@IdRes int id, @DrawableRes int icon,
+    public FloatingToolbarMenuBuilder addItem(int id, @DrawableRes int icon,
                                               @StringRes int title) {
         menuBuilder.add(Menu.NONE, id, Menu.NONE, title).setIcon(icon);
         return this;
     }
 
-    public FloatingToolbarMenuBuilder addItem(@IdRes int id, @DrawableRes int icon, String title) {
+    public FloatingToolbarMenuBuilder addItem(int id, @DrawableRes int icon, String title) {
         menuBuilder.add(Menu.NONE, id, Menu.NONE, title).setIcon(icon);
         return this;
     }
 
-    public FloatingToolbarMenuBuilder addItem(@IdRes int id, @DrawableRes int icon) {
+    public FloatingToolbarMenuBuilder addItem(int id, @DrawableRes int icon) {
         menuBuilder.add(Menu.NONE, id, Menu.NONE, "").setIcon(icon);
         return this;
     }
 
-    public FloatingToolbarMenuBuilder addItem(@IdRes int id, Drawable icon) {
+    public FloatingToolbarMenuBuilder addItem(int id, Drawable icon) {
         menuBuilder.add(Menu.NONE, id, Menu.NONE, "").setIcon(icon);
         return this;
     }
