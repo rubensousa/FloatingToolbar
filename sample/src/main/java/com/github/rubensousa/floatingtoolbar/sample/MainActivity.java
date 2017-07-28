@@ -44,11 +44,14 @@ public class MainActivity extends AppCompatActivity implements FloatingToolbar.I
         mFloatingToolbar.attachRecyclerView(recyclerView);
         mFloatingToolbar.addMorphListener(this);
 
-
         //Create a custom menu
-       /* mFloatingToolbar.setMenu(new FloatingToolbarMenuBuilder(this)
-                .addItem(R.drawable.ic_google_plus_box, "Google")
-                .build());*/
+        mFloatingToolbar.setMenu(new FloatingToolbarMenuBuilder(this)
+                .addItem(R.id.action_unread, R.drawable.ic_markunread_black_24dp, "Mark unread")
+                .addItem(R.id.action_copy, R.drawable.ic_content_copy_black_24dp, "Copy")
+                .addItem(R.id.action_google, R.drawable.ic_google_plus_box, "Google+")
+                .addItem(R.id.action_facebook, R.drawable.ic_facebook_box, "Facebook")
+                .addItem(R.id.action_twitter, R.drawable.ic_twitter_box, "Twitter")
+                .build());
 
         // Usage with custom view
         /*View customView = mFloatingToolbar.getCustomView();

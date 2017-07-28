@@ -20,6 +20,7 @@ package com.github.rubensousa.floatingtoolbar;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
 import android.support.v7.view.menu.MenuBuilder;
 import android.view.Menu;
@@ -33,33 +34,34 @@ public class FloatingToolbarMenuBuilder {
         menuBuilder = new MenuBuilder(context);
     }
 
-    public FloatingToolbarMenuBuilder addItem(Drawable icon, String title) {
-        menuBuilder.add(title).setIcon(icon);
+    public FloatingToolbarMenuBuilder addItem(@IdRes int id, Drawable icon, String title) {
+        menuBuilder.add(Menu.NONE, id, Menu.NONE, title).setIcon(icon);
         return this;
     }
 
-    public FloatingToolbarMenuBuilder addItem(Drawable icon, @StringRes int title) {
-        menuBuilder.add(title).setIcon(icon);
+    public FloatingToolbarMenuBuilder addItem(@IdRes int id, Drawable icon, @StringRes int title) {
+        menuBuilder.add(Menu.NONE, id, Menu.NONE, title).setIcon(icon);
         return this;
     }
 
-    public FloatingToolbarMenuBuilder addItem(@DrawableRes int icon, @StringRes int title) {
-        menuBuilder.add(title).setIcon(icon);
+    public FloatingToolbarMenuBuilder addItem(@IdRes int id, @DrawableRes int icon,
+                                              @StringRes int title) {
+        menuBuilder.add(Menu.NONE, id, Menu.NONE, title).setIcon(icon);
         return this;
     }
 
-    public FloatingToolbarMenuBuilder addItem(@DrawableRes int icon, String title) {
-        menuBuilder.add(title).setIcon(icon);
+    public FloatingToolbarMenuBuilder addItem(@IdRes int id, @DrawableRes int icon, String title) {
+        menuBuilder.add(Menu.NONE, id, Menu.NONE, title).setIcon(icon);
         return this;
     }
 
-    public FloatingToolbarMenuBuilder addItem(@DrawableRes int icon) {
-        menuBuilder.add("").setIcon(icon);
+    public FloatingToolbarMenuBuilder addItem(@IdRes int id, @DrawableRes int icon) {
+        menuBuilder.add(Menu.NONE, id, Menu.NONE, "").setIcon(icon);
         return this;
     }
 
-    public FloatingToolbarMenuBuilder addItem(Drawable icon) {
-        menuBuilder.add("").setIcon(icon);
+    public FloatingToolbarMenuBuilder addItem(@IdRes int id, Drawable icon) {
+        menuBuilder.add(Menu.NONE, id, Menu.NONE, "").setIcon(icon);
         return this;
     }
 
