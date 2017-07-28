@@ -10,7 +10,7 @@ Available from API 14.
 
 ## How to use
 
-#####1. Add the following to your build.gradle:
+##### 1. Add the following to your build.gradle:
 ```groovy
 compile 'com.github.rubensousa:floatingtoolbar:1.5.0'
 ```
@@ -45,6 +45,18 @@ compile 'com.github.rubensousa:floatingtoolbar:1.5.0'
 </android.support.design.widget.CoordinatorLayout>
 ```
 ##### 3. Specify a menu resource file or custom layout with app:floatingMenu or app:floatingCustomView
+
+You can also build a menu programmatically using FloatingToolbarMenuBuilder:
+
+```java
+ mFloatingToolbar.setMenu(new FloatingToolbarMenuBuilder(this)
+                .addItem(R.id.action_unread, R.drawable.ic_markunread_black_24dp, "Mark unread")
+                .addItem(R.id.action_copy, R.drawable.ic_content_copy_black_24dp, "Copy")
+                .addItem(R.id.action_google, R.drawable.ic_google_plus_box, "Google+")
+                .addItem(R.id.action_facebook, R.drawable.ic_facebook_box, "Facebook")
+                .addItem(R.id.action_twitter, R.drawable.ic_twitter_box, "Twitter")
+                .build());
+```
 
 ##### 4. Attach the FAB to the FloatingToolbar to automatically start the transition on click event:
 
