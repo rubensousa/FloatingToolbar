@@ -371,6 +371,13 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
     }
 
     /**
+     * Removes every morph listener previous added
+     */
+    public void removeMorphListeners() {
+        mMorphListeners.clear();
+    }
+
+    /**
      * This method will automatically morph the attached FloatingActionButton
      * into this FloatingToolbar.
      *
