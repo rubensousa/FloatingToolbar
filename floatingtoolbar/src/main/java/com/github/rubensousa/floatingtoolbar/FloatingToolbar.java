@@ -140,18 +140,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
 
         if (mMenuRes != 0 && customView == 0) {
-            mMenuLayout = new LinearLayoutCompat(context, attrs, defStyleAttr);
-
-            LayoutParams layoutParams
-                    = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-
-            mMenuLayout.setId(genViewId());
-            addView(mMenuLayout, layoutParams);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                mMenuLayout.setPaddingRelative(0, 0, 0, 0);
-            } else {
-                mMenuLayout.setPadding(0, 0, 0, 0);
-            }
+            createMenuLayout();
             addMenuItems();
             mAnimator.setContentView(mMenuLayout);
         }
@@ -275,6 +264,9 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
      */
     public void setMenu(Menu menu) {
         mMenu = menu;
+        if (mMenuLayout == null) {
+            createMenuLayout();
+        }
         mMenuLayout.removeAllViews();
         addMenuItems();
         mAnimator.setContentView(mMenuLayout);
@@ -516,6 +508,21 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
         }
     }
 
+    private void createMenuLayout() {
+        mMenuLayout = new LinearLayoutCompat(getContext());
+
+        LayoutParams layoutParams
+                = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+        mMenuLayout.setId(genViewId());
+        addView(mMenuLayout, layoutParams);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            mMenuLayout.setPaddingRelative(0, 0, 0, 0);
+        } else {
+            mMenuLayout.setPadding(0, 0, 0, 0);
+        }
+    }
+
     void dispatchShow() {
         mShowing = true;
 
@@ -541,7 +548,7 @@ public class FloatingToolbar extends LinearLayoutCompat implements View.OnClickL
             if (mFab != null) {
                 mFab.setVisibility(View.VISIBLE);
             }
-        }else {
+        } else {
             mAnimator.hide();
             mAnimating = true;
             for (MorphListener morphListener : mMorphListeners) {
